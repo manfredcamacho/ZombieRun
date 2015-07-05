@@ -1,12 +1,11 @@
 package servidor;
 
-import herramientas.MySQLConnection;//************************************
+import herramientas.MySQLConnection;
 
 import java.net.*;
-import java.sql.Connection;//*************************************
+import java.sql.Connection;
 import java.util.*;
 
-import comunicacion.*;
 public class Servidor {
 
 	// ESCUCHARA CONSTANTEMENTE A LOS JUGADORES
@@ -21,8 +20,8 @@ public class Servidor {
 	// DEMO PROBAMOS CON UNA PARTIDA
 	private Partida partida;
 	
-	//ABRIMOS CONECCION A BD***********************************
-	private Connection conn;//*********************************
+	//ABRIMOS CONECCION A BD
+	private Connection conn;
 	
 	
 	
@@ -30,7 +29,7 @@ public class Servidor {
 		
 		partida = new Partida( 1, "Zombie", 1, 1); // ES PARA INTENTAR CONECTAR A DOS JUGADORES EN UN MISMO PROCESO
 		usuarios = new ArrayList<Socket>();
-		conn = MySQLConnection.getConnection();//***********************************
+		conn = MySQLConnection.getConnection();
 		
 		try {
 			// GENERO EL SERVERSOCKET
@@ -45,7 +44,7 @@ public class Servidor {
 				
 				System.out.println("SE CONECTO : " + clientSocket.getInetAddress() );
 				usuarios.add(clientSocket);
-				HiloDeCliente hilo = new HiloDeCliente( clientSocket, usuarios, partida, conn );//*******************************
+				HiloDeCliente hilo = new HiloDeCliente( clientSocket, usuarios, partida, conn );
 				hilo.start();
 				// MANDO A EJECUTAR EL HILO
 				// VUELVO AL PRINCIPIO DEL WHILE A EMPEZAR A ESCUCHAR DE NUEVO
@@ -58,6 +57,7 @@ public class Servidor {
 	}
 	
 	public static void main(String[] args) {
+		@SuppressWarnings("unused")
 		Servidor sv = new Servidor();
 	}
 	

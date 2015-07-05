@@ -3,7 +3,6 @@ package servidor;
 
 import java.util.*;
 import java.io.IOException;
-import java.net.*;
 
 import clasesPrincipales.Figura;
 
@@ -25,9 +24,9 @@ public class Partida {
 	
 	public Partida(int i, String nom, int cantMax, int cantMin ){
 		id = i;
-		nombre = nom;
+		setNombre(nom);
 		cantJugadoresMax = cantMax;
-		cantJugadoresMin = cantMin;
+		setCantJugadoresMin(cantMin);
 		cantJugadoresEnCurso = 0;
 		jugadores = new ArrayList<Jugador>();
 		
@@ -80,6 +79,38 @@ public class Partida {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public int getCantJugadoresMin() {
+		return cantJugadoresMin;
+	}
+
+	public void setCantJugadoresMin(int cantJugadoresMin) {
+		this.cantJugadoresMin = cantJugadoresMin;
+	}
+
+	public boolean isEstado() {
+		return estado;
+	}
+
+	public void setEstado(boolean estado) {
+		this.estado = estado;
+	}
+
+	public Figura[][] getEscenario() {
+		return escenario;
+	}
+
+	public void setEscenario(Figura[][] escenario) {
+		this.escenario = escenario;
 	}
 	
 }

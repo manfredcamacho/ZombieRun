@@ -3,7 +3,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
 
-import javax.jws.Oneway;
 public class Jugador {
 	
 	private Socket clientSocket;

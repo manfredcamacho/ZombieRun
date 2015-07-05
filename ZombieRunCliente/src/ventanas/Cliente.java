@@ -10,7 +10,7 @@ public class Cliente extends Thread{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	// DATOS NECESARIOS PARA LA CONEXION
-	private static final String host ="10.11.4.6";
+	private static final String host ="127.0.0.1";
 	private static final int puerto = 5000;
 	
 	private Object objLeido;
@@ -59,6 +59,17 @@ public class Cliente extends Thread{
 	
 	public Object leerMensaje(){
 		return objLeido;
+	}
+	
+	public void cerrarSocket(){
+		try {
+			enviarMensaje("KILL THREAD");
+			out.close();
+			in.close();					
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

@@ -3,13 +3,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-
 import comunicacion.*;
 
 public class HiloDeCliente extends Thread{
@@ -24,11 +22,11 @@ public class HiloDeCliente extends Thread{
 	// PARTIDAS EN PROCESO
 	private Partida partida; // DEMO
 
-	private Connection conn;//******************************
+	private Connection conn;
 	
-	public HiloDeCliente( Socket s, ArrayList<Socket> u, Partida p , Connection c ){//***************************
+	public HiloDeCliente( Socket s, ArrayList<Socket> u, Partida p , Connection c ){
 		clientSocket = s;
-		usuarios = u;
+		setUsuarios(u);
 		partida = p; // DEMO
 		conn = c;
 		try {
@@ -78,6 +76,14 @@ public class HiloDeCliente extends Thread{
 					System.out.println("Registro");
 					agregarUsuario((RegistrarBean) peticion);
 					out.writeObject("te registraste");
+				}else if( peticion instanceof DesconexionBean ){
+					System.out.println("Usuario Desconectado");
+					desconectarUsuario();
+					out.writeObject("DESCONECTADO");
+				}else if( peticion.equals("KILL THREAD") ){
+					System.out.println("Eliminando hilo de cliente");					
+					out.writeObject("HILO ELIMINADO");
+					break;//eliminamos bucle infinito
 				}else{
 					System.out.println("no se reconoce al objeto.");
 				}
@@ -89,6 +95,12 @@ public class HiloDeCliente extends Thread{
 	
 	
 	//////////////METODOS PARA EL MANEJO DE BASE DE DATOS////////
+
+	private void desconectarUsuario() {
+		//QUITAMOS AL USURIO DE LA LISTA DE USUARIOS CONECTADOS Y DEJAMOS QUE EL CLIENTE CIERRE LA
+		//LA CONEXION
+		usuarios.remove(clientSocket);		
+	}
 
 	private boolean loguear(LoginBean login) {
 		boolean loginSuccess = false;
@@ -133,6 +145,14 @@ public class HiloDeCliente extends Thread{
 				e.printStackTrace();
 			}
 		}	
+	}
+
+	public ArrayList<Socket> getUsuarios() {
+		return usuarios;
+	}
+
+	public void setUsuarios(ArrayList<Socket> usuarios) {
+		this.usuarios = usuarios;
 	}
 	
 }

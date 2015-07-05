@@ -35,7 +35,7 @@ public class Lobby extends JFrame {
 	private Cliente clientSocket;
 	
 	//ARRAYLIST DE PARTIDAS
-	....
+	//....
 	
 	public Lobby(final Login login, Cliente client) {
 		
@@ -45,7 +45,7 @@ public class Lobby extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				salir();			
+				desconectar();			
 			}
 		});
 
@@ -199,6 +199,7 @@ public class Lobby extends JFrame {
 
 	public void desconectar() {
 		if(pedirConfirmacion() == JOptionPane.YES_OPTION){
+			clientSocket.enviarMensaje(new DesconexionBean());
 			login.setVisible(true);
 			this.dispose();
 		}
@@ -216,12 +217,5 @@ public class Lobby extends JFrame {
 	
 	public void mostrarMensajeSatisfactorio(String msg, int tipo_mensaje){
 		JOptionPane.showMessageDialog(this, msg, "", tipo_mensaje, null);
-	}
-	
-	public void salir(){
-		int res = JOptionPane.showConfirmDialog(this, "¿Seguro que desea salir?","Cerrando la aplicación...", JOptionPane.YES_NO_OPTION);
-		if(res == JOptionPane.YES_OPTION){
-			System.exit(0);
-		}
 	}
 }

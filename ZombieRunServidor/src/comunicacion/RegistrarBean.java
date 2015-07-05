@@ -37,9 +37,4 @@ public class RegistrarBean implements Serializable{
 		this.respuesta = respuesta;
 	}
 	
-	@Override
-	public String toString() {
-		return nick+password+pregunta+respuesta;
-	}
-	
 }

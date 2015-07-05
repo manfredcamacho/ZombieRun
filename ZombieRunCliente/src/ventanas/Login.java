@@ -19,9 +19,17 @@ import javax.swing.JButton;
 import comunicacion.LoginBean;
 
 
+
+
+
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -63,10 +71,24 @@ public class Login extends JFrame{
 		}
 		
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				cerrar();			
+			}
+		});
+		addComponentListener(new ComponentAdapter() {
+			public void componentHidden(ComponentEvent e) 
+			{
+			    /* code run when component hidden*/
+			}
+			public void componentShown(ComponentEvent e) {
+			    tfUsuario.requestFocus();
+			}
+		});
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/imagenes/zombie_hand.png")));
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setSize(477, 329);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
@@ -138,11 +160,6 @@ public class Login extends JFrame{
 		btnIngresar.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
 		btnIngresar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//
-				System.out.println("Se presiono ingresar");
-				//client.enviarMensaje(new Peticion() );
-				client.enviarMensaje(new LoginBean(tfUsuario.getText(), tfPassword.getPassword()));
-				//
 				validar();
 			}
 		});
@@ -157,6 +174,11 @@ public class Login extends JFrame{
 		
 		
 		contentPane.add(label);
+	}
+	
+	public void cerrar(){
+		client.cerrarSocket();
+		System.exit(0);
 	}
 	
 	public void abrirLobby(){
@@ -186,7 +208,8 @@ public class Login extends JFrame{
 	}
 	
 	public void validar(){
-		String contra = new String( tfPassword.getPassword() );
+		//System.out.println("Se presiono ingresar");
+		client.enviarMensaje(new LoginBean(tfUsuario.getText(), tfPassword.getPassword()));
 		if( client.leerMensaje().equals("INGRESADO") ){
 			abrirLobby();
 			tfUsuario.setText("");

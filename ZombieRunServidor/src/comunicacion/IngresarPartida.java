@@ -9,6 +9,20 @@ public class IngresarPartida implements Serializable{
 	private int id;
 	
 	public IngresarPartida(int i){
-		id = i;
+		this.id = i;
 	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+	
 }
