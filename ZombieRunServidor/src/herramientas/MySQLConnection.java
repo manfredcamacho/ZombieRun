@@ -21,8 +21,9 @@ public class MySQLConnection {
 				conn = DriverManager.getConnection(url,usr,pwd);
 				System.out.println("Se realizó la conexión con éxito");
 			}
-			else
+			else{
 				System.out.println("La conexión se encuentra realizada.");
+			}
 		} catch (ClassNotFoundException cnfe) {
 			System.err.println("No se encuentra el Driver.");
 		} catch (SQLException sqle) {

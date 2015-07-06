@@ -2,17 +2,13 @@ package ventanas;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-
-import principales.*;
-import comunicacion.*;
-
-
 public class Escenario extends JFrame {
+
+	private static final long serialVersionUID = 4013032887277483935L;
 
 	private JPanel contentPane;
 
@@ -39,7 +35,7 @@ public class Escenario extends JFrame {
 	
 	
 	// ESTE METODO SE ENCARGA DE DIBUJAR EL MAPA
-	public void dibujarEscenario( Figura[][] mapa ){
+	public void dibujarEscenario( /*Figura[][] mapa */){
 		
 	}
 	
