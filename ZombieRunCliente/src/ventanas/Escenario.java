@@ -7,11 +7,52 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+
+import principales.*;
+import comunicacion.*;
+
+
 public class Escenario extends JFrame {
 
-	private static final long serialVersionUID = -5490125364975379023L;
 	private JPanel contentPane;
 
+	// SE ALMACENA HACIA DONDE SE QUIERE MOVER EL JUGADOR Y SE INICIALIZA CADA VEZ QUE LLEGA EL MAPA
+	private int direccion;
+	
+	// OBJETO EL CUAL NOS PERMITE MANTENER LA COMUNICACION CON EL SERVIDOR
+	private Cliente clientSocket;
+	
+	//IMAGENES
+	
+	
+	
+	
+
+	public Escenario() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+	}
+	
+	
+	// ESTE METODO SE ENCARGA DE DIBUJAR EL MAPA
+	public void dibujarEscenario( Figura[][] mapa ){
+		
+	}
+	
+	
+	// ESTE METODO SE ENCARGA DE ENVIAR UNA DIRECCION
+	public void enviarDireccion(){
+		
+	}
+	
+	
+	
+	
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -24,17 +65,6 @@ public class Escenario extends JFrame {
 			}
 		});
 	}
-
-	/**
-	 * Create the frame.
-	 */
-	public Escenario() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
-	}
+	
 
 }
