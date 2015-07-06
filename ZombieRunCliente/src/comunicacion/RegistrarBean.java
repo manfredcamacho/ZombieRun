@@ -3,9 +3,7 @@ package comunicacion;
 import java.io.Serializable;
 
 public class RegistrarBean implements Serializable{
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 252719454715932143L;
 	private String nick;
 	private char[] password;
@@ -39,7 +37,7 @@ public class RegistrarBean implements Serializable{
 	
 	@Override
 	public String toString() {
-		return nick+password+pregunta+respuesta;
+		return nick+password.toString()+pregunta+respuesta;
 	}
 	
 }

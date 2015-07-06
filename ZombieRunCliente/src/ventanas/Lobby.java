@@ -1,9 +1,7 @@
 package ventanas;
 
 import herramientas.cargadorRecursos;
-
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -12,12 +10,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import javax.swing.JList;
-
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.ListSelectionModel;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -110,10 +105,9 @@ public class Lobby extends JFrame {
 		
 		/////////////////////////////////////////////////////////////////////
 		
-		
-		final JList listPartidas = new JList();
-		// CREERIA QUE ES UN CONTENEDOR DE ITEMS
-		DefaultListModel modelo = new DefaultListModel</*
+		//cambiar String por tipo de dato correcto
+		final JList<String> listPartidas = new JList<String>();
+		DefaultListModel<String> modelo = new DefaultListModel</*
 														 * AQUI VA EL TIPO DE
 														 * OBJETO QUE SE
 														 * ALMACENA

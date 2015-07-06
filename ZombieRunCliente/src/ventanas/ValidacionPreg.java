@@ -1,29 +1,15 @@
 package ventanas;
 
 import herramientas.cargadorRecursos;
-
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.Font;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.JTextComponent;
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import javax.swing.JButton;
-
-import java.awt.Component;
-
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
-import javax.swing.JScrollBar;
-import javax.swing.UIManager;
-
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -35,6 +21,7 @@ import java.awt.event.KeyEvent;
 
 public class ValidacionPreg extends JFrame {
 
+	private static final long serialVersionUID = -7374416633787035037L;
 	private JPanel contentPane;
 	private JTextField TFrespuesta;
 	private Login login;

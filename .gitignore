@@ -1,3 +1,5 @@
 *.class
-*.class
 *.prefs
+*.launch
+*.project
+bin/

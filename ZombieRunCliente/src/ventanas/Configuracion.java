@@ -1,21 +1,14 @@
 package ventanas;
 
 import herramientas.cargadorRecursos;
-
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -25,19 +18,14 @@ import java.awt.Toolkit;
 
 public class Configuracion extends JFrame {
 
+	private static final long serialVersionUID = -6545411950962728552L;
 	private JPanel contentPane;
 	private JTextField textFieldNick;
 	private JTextField textFieldPasswdAct;
 	private JTextField textFieldNewPasswd;
 	private JTextField textFieldConfirmNewPasswd;
 	private Lobby lobby;
-	/**
-	 * Launch the application.
-	 */
 
-	/**
-	 * Create the frame.
-	 */
 	public Configuracion(final Lobby lob) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Configuracion.class.getResource("/imagenes/zombie_hand.png")));
 		addWindowListener(new WindowAdapter() {

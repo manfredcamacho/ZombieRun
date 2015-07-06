@@ -2,11 +2,8 @@ package ventanas;
 
 import herramientas.cargadorRecursos;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.ScrollPane;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,16 +11,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.Timer;
 
-
-
-import java.awt.List;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -32,12 +24,14 @@ import java.awt.event.ActionEvent;
 
 public class Espera extends JFrame {
 
+	private static final long serialVersionUID = -3130079893489606850L;
 	private JPanel contentPane;
 	private Lobby lobby;
 	private JLabel lblTimer;
 	private Timer timer;
 	
 	// COMUNICACION CON EL CLIENTE
+	@SuppressWarnings("unused")
 	private Cliente clientSocket;
 	
 	
@@ -150,14 +144,15 @@ public class Espera extends JFrame {
 		 * LO QUE SI PODRIAMOS MOSTRAR ES LA CANTIDAD DE JUGADORES QUE ESTAN CONECTADOS A LA PARTIDA
 		 */
 		
-		JList listJugadores = new JList();
+		//cambiar String por el tipo de objeto correcto
+		JList<String> listJugadores = new JList<String>();
 		listJugadores.setValueIsAdjusting(true);
 		listJugadores.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		listJugadores.setForeground(Color.WHITE);
 		listJugadores.setOpaque(true);
 		listJugadores.setBackground(new Color(0,0,0,100));
 		listJugadores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		DefaultListModel modelo = new DefaultListModel();
+		DefaultListModel<String> modelo = new DefaultListModel<String>();
 		for (int i = 0; i < Integer.parseInt((datos[1].split("/"))[0]); i++) {
 			modelo.addElement("Jugador " + (i+1));
 		}
