@@ -9,11 +9,9 @@ import javax.swing.border.EmptyBorder;
 
 public class Escenario extends JFrame {
 
+	private static final long serialVersionUID = -5490125364975379023L;
 	private JPanel contentPane;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
