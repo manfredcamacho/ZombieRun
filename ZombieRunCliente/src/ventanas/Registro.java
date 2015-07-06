@@ -1,6 +1,7 @@
 package ventanas;
 
 import herramientas.cargadorRecursos;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -8,12 +9,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+
 import java.awt.Font;
+
 import javax.swing.JButton;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
+
 import comunicacion.RegistrarBean;
+
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.Dimension;
@@ -170,12 +176,22 @@ public class Registro extends JFrame {
 			bean.setPassword(passwordField.getPassword());
 			bean.setPregunta(textField_1.getText());
 			bean.setRespuesta(textField_2.getText());
-			System.out.println(bean);
 			client.enviarMensaje(bean);
-		}
-		mostrarMensaje("Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-		login.setVisible(true);
-		this.dispose();
+			if(client.leerMensaje().equals("REGISTRO")){
+				mostrarMensaje("Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+				login.setVisible(true);
+				this.dispose();
+			}else{
+				int resp = JOptionPane.showConfirmDialog(this, "Usuario ya existente. ¿Desea recuperar la contraseña?", "Usuario ya existente", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+				if(resp == JOptionPane.YES_OPTION){
+					@SuppressWarnings("unused")
+					ValidacionPreg vp = new ValidacionPreg(login, textField.getText());
+					this.dispose();
+				}
+			}
+		}else
+			mostrarMensaje("Campo inválido", JOptionPane.WARNING_MESSAGE);
+		
 	}
 
 	private boolean validarCampos() {

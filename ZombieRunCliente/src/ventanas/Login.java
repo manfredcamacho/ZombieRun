@@ -23,6 +23,7 @@ import comunicacion.LoginBean;
 
 
 
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -43,6 +44,7 @@ public class Login extends JFrame{
 	private JPasswordField tfPassword;
 	private int cantIntentos = 0;
 	private Cliente client;
+	private String nick;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -194,9 +196,9 @@ public class Login extends JFrame{
 	}
 	
 	public void abrirValidacionPreg(){
-		@SuppressWarnings("unused")
-		ValidacionPreg vp = new ValidacionPreg(this);
-		this.setVisible(false);
+			@SuppressWarnings("unused")
+			ValidacionPreg vp = new ValidacionPreg(this, nick);
+			this.setVisible(false);
 	}
 	
 	public void intento(){
@@ -217,6 +219,7 @@ public class Login extends JFrame{
 		}else{
 			intento();
 			JOptionPane.showMessageDialog(null, "Usuario / Contraseña incorrecta");
+			this.nick = tfUsuario.getText();
 			tfUsuario.setText("");
 			tfPassword.setText("");
 			tfUsuario.requestFocus();
@@ -224,6 +227,10 @@ public class Login extends JFrame{
 		if( cantIntentos == 3 ){
 			abrirValidacionPreg();
 		}
+	}
+	
+	public Cliente getClient(){
+		return client;
 	}
 	
 }

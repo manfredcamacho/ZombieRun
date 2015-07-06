@@ -1,7 +1,9 @@
 package ventanas;
 
 import herramientas.cargadorRecursos;
+
 import java.awt.Font;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +12,10 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
+
+import comunicacion.RecuperarBean;
+import comunicacion.ValidarRespuestaBean;
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -25,17 +31,16 @@ public class ValidacionPreg extends JFrame {
 	private JPanel contentPane;
 	private JTextField TFrespuesta;
 	private Login login;
-	private JLabel contrasenia;
-	
+	private JTextArea TFpregunta;
 
 
 	
-	public ValidacionPreg(final Login log) {
+	public ValidacionPreg(final Login log, final String nick) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ValidacionPreg.class.getResource("/imagenes/zombie_hand.png")));
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				salir();
+				cerrarPrograma();
 			}
 		});
 		login = log;
@@ -50,21 +55,21 @@ public class ValidacionPreg extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-		String pregunta = "Cual fue el nombre de tu primera mascota? ";
-		JTextArea JTpregunta = new JTextArea();
-		JTpregunta.setForeground(new Color(240, 255, 255));
-		JTpregunta.setText(pregunta);
-		JTpregunta.setBounds(32, 33, 431, 75);
-		contentPane.add(JTpregunta);
-		multilineaTextArea(JTpregunta);
+	
+		TFpregunta = new JTextArea();
+		TFpregunta.setForeground(new Color(240, 255, 255));
+		TFpregunta.setBounds(32, 33, 431, 75);
+		contentPane.add(TFpregunta);
+		multilineaTextArea(TFpregunta);
+		cargarPreguntaSecreta(nick);
 		
 		TFrespuesta = new JTextField();
+		TFrespuesta.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		TFrespuesta.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent key) {
 				if(key.getKeyChar() == '\n')
-					validar();
+					validar(nick);
 			}
 		});
 		TFrespuesta.setBounds(154, 165, 252, 20);
@@ -80,37 +85,24 @@ public class ValidacionPreg extends JFrame {
 		
 		
 		JButton btnAceptar = new JButton("Aceptar");
+		btnAceptar.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnAceptar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				validar();
+				validar(nick);
 			}
 		});
-		btnAceptar.setBounds(32, 213, 111, 36);
+		btnAceptar.setBounds(236, 245, 111, 36);
 		contentPane.add(btnAceptar);
-		
-		contrasenia = new JLabel("***********");
-		contrasenia.setForeground(new Color(245, 255, 250));
-		contrasenia.setBounds(154, 230, 210, 29);
-		contrasenia.setVisible(true);
-		contentPane.add(contrasenia);
-		
-		JLabel lblContrasea = new JLabel("TU CONTRASEÑA: ");
-		lblContrasea.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblContrasea.setForeground(new Color(245, 255, 250));
-		lblContrasea.setBounds(154, 213, 110, 14);
-		lblContrasea.setVisible(true);
-		contentPane.add(lblContrasea);
 	
 		
-		JButton btnAtras = new JButton("Atr\u00E1s");
+		JButton btnAtras = new JButton("Salir");
+		btnAtras.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				login.setVisible(true);
-				login.setIntento();
-				dispose();
+				salir();
 			}
 		});
-		btnAtras.setBounds(374, 252, 89, 23);
+		btnAtras.setBounds(357, 245, 106, 36);
 		contentPane.add(btnAtras);
 
 		
@@ -119,6 +111,7 @@ public class ValidacionPreg extends JFrame {
 		JLabel label = new JLabel("");
 		label.setBounds(0, 0, 473, 296);
 		label.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_5.jpg", label));
+		
 		TFrespuesta.requestFocus();
 		contentPane.add(label);
 	}
@@ -133,14 +126,36 @@ public class ValidacionPreg extends JFrame {
 	   //}
 	 }
 	
-	public void salir(){
+	public void cerrarPrograma(){
 		int res = JOptionPane.showConfirmDialog(this, "¿Seguro que desea salir?","Cerrando la aplicación...", JOptionPane.YES_NO_OPTION);
 		if(res == JOptionPane.YES_OPTION){
 			System.exit(0);
 		}
 	}
 	
-	public void validar(){
-		contrasenia.setText("amoroso69");
+	public void salir(){
+		login.setVisible(true);
+		login.setIntento();
+		dispose();
+	}
+	
+	private void cargarPreguntaSecreta(String nick){
+		login.getClient().enviarMensaje(new RecuperarBean(nick));
+		if(login.getClient().leerMensaje().equals("NICK INVALIDO"))
+			JOptionPane.showMessageDialog(this,"El usuario no existe.","Nick Invalido", JOptionPane.WARNING_MESSAGE);
+		else
+			this.TFpregunta.setText((String) login.getClient().leerMensaje());
+	}
+	
+	private void validar(String nick){
+		login.getClient().enviarMensaje(new ValidarRespuestaBean(nick, this.TFrespuesta.getText()));
+		if(login.getClient().leerMensaje().equals("RESPUESTA INVALIDA")){
+			JOptionPane.showMessageDialog(this,"La respuesta ingresa no es la correcta.","Respuesta Invalida", JOptionPane.WARNING_MESSAGE);
+			TFrespuesta.setText("");
+			TFrespuesta.requestFocus();
+		}else{
+			JOptionPane.showMessageDialog(this,(String) login.getClient().leerMensaje(), "Tu contraseña", JOptionPane.INFORMATION_MESSAGE);
+			salir();
+		}
 	}
 }

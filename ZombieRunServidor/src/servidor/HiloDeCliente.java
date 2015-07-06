@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+
 import comunicacion.*;
 
 public class HiloDeCliente extends Thread{
@@ -24,8 +25,13 @@ public class HiloDeCliente extends Thread{
 
 	private Connection conn;
 	
-	public HiloDeCliente( Socket s, ArrayList<Socket> u, Partida p , Connection c ){
+	private ServidorFrame frame;
+	
+	private String ipCliente;
+	
+	public HiloDeCliente( Socket s, ArrayList<Socket> u, Partida p , Connection c, ServidorFrame frame){
 		clientSocket = s;
+		this.frame = frame;
 		setUsuarios(u);
 		partida = p; // DEMO
 		conn = c;
@@ -33,8 +39,8 @@ public class HiloDeCliente extends Thread{
 			// VINCULAMOS LOS INPUT Y OUTPUT CON LOS DEL CLIENTE( ESTOS LOS TIENE EL SOCKET )
 			in = new ObjectInputStream( clientSocket.getInputStream() );
 			out = new ObjectOutputStream( clientSocket.getOutputStream() );
+			ipCliente = clientSocket.getInetAddress().getHostAddress();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -46,7 +52,7 @@ public class HiloDeCliente extends Thread{
 	@Override
 	public void run(){
 		try {
-	
+			String respuesta;
 			while(true){
 				//RECIBIMOS EL OBJETO
 				Object peticion = in.readObject();
@@ -55,7 +61,7 @@ public class HiloDeCliente extends Thread{
 				// REEMPLAZAR POR UN SWITCH
 				if( peticion instanceof IngresarPartida ){
 					partida.agregarJugador( new Jugador(clientSocket,out,in)); // DUDO QUE ESTE BIEN
-					System.out.println("SE AGREGO EL JUGADOR " + clientSocket.getInetAddress());
+					frame.mostrarMensajeFrame("SE AGREGO EL JUGADOR " + clientSocket.getInetAddress());
 					out.writeObject("AGREGADO");
 					this.finalize();
 					in.wait();
@@ -64,28 +70,44 @@ public class HiloDeCliente extends Thread{
 					// PERO SERIA UNA FORMA DE DETENER ESTE HILO PARA QUE LO
 					
 				}else if( peticion instanceof LoginBean ){
-					System.out.println("login");
-					if(loguear((LoginBean) peticion))
+					if(loguear((LoginBean) peticion)){
+						frame.mostrarMensajeFrame(ipCliente+">> Login");
 						out.writeObject("INGRESADO");
-					else
+					}else
 						out.writeObject("ERROR LOGIN");
 				}else if( peticion instanceof Peticion ){
-					System.out.println("Peticion");
+					frame.mostrarMensajeFrame(ipCliente+">> Peticion");
 					out.writeObject("INGRESADO");
 				}else if( peticion instanceof RegistrarBean ){
-					System.out.println("Registro");
-					agregarUsuario((RegistrarBean) peticion);
-					out.writeObject("te registraste");
+					if(agregarUsuario((RegistrarBean) peticion)){
+						frame.mostrarMensajeFrame(ipCliente+">> Registro");
+						out.writeObject("REGISTRO");
+					}else
+						out.writeObject("ERROR REGISTRO");
 				}else if( peticion instanceof DesconexionBean ){
-					System.out.println("Usuario Desconectado");
 					desconectarUsuario();
+					frame.mostrarMensajeFrame(ipCliente+">> Logout");
 					out.writeObject("DESCONECTADO");
 				}else if( peticion.equals("KILL THREAD") ){
-					System.out.println("Eliminando hilo de cliente");					
+					frame.mostrarMensajeFrame(ipCliente+">> Eliminando hilo de cliente");					
 					out.writeObject("HILO ELIMINADO");
 					break;//eliminamos bucle infinito
+				}else if( peticion instanceof RecuperarBean ){
+					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de Pregunta secreta.");
+					respuesta = devolverPreguntaSecreta((RecuperarBean) peticion);
+					if(respuesta == null)
+						out.writeObject("NICK INVALIDO");
+					else
+						out.writeObject(respuesta);
+				}else if( peticion instanceof ValidarRespuestaBean ){
+					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de validar respuesta");					
+					respuesta = validarRespuesta((ValidarRespuestaBean) peticion); 
+					if(respuesta == null)
+						out.writeObject("RESPUESTA INVALIDA");
+					else
+						out.writeObject(respuesta);
 				}else{
-					System.out.println("no se reconoce al objeto.");
+					frame.mostrarMensajeFrame("no se reconoce al objeto.");
 				}
 			}
 		} catch (Throwable e) {
@@ -95,6 +117,57 @@ public class HiloDeCliente extends Thread{
 	
 	
 	//////////////METODOS PARA EL MANEJO DE BASE DE DATOS////////
+
+	private String validarRespuesta(ValidarRespuestaBean peticion) {
+		String respuestaSecreta = null;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement(" select password from usuario where nick = ? and respuestaSecreta = ?");
+			pstmt.setString(1, peticion.getNick());
+			pstmt.setString(2, peticion.getRespuesta());
+			pstmt.execute();
+			System.out.println(pstmt.toString());
+			ResultSet rs = pstmt.getResultSet();
+			while(rs.next()){
+				respuestaSecreta = rs.getString(1);
+			}
+				
+		} catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} finally {
+			try {
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return respuestaSecreta;
+	}
+
+	private String devolverPreguntaSecreta(RecuperarBean peticion) {
+		String preguntaSecreta = null;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement(" select preguntaSecreta from usuario where nick = ?");
+			pstmt.setString(1, peticion.getNick());
+			pstmt.execute();
+			System.out.println(pstmt.toString());
+			ResultSet rs = pstmt.getResultSet();
+			while(rs.next()){
+				preguntaSecreta = rs.getString(1);
+			}
+				
+		} catch(SQLException sqle) {
+			sqle.printStackTrace();
+		} finally {
+			try {
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return preguntaSecreta;
+	}
 
 	private void desconectarUsuario() {
 		//QUITAMOS AL USURIO DE LA LISTA DE USUARIOS CONECTADOS Y DEJAMOS QUE EL CLIENTE CIERRE LA
@@ -127,15 +200,25 @@ public class HiloDeCliente extends Thread{
 		return loginSuccess;
 	}
 
-	public void agregarUsuario(RegistrarBean registro) {
+	public boolean agregarUsuario(RegistrarBean registro) {
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = conn.prepareStatement("Insert into Usuario values(null, ?, ?, ?, ?)");
+			//verificamos que no exista el mismo usuario
+			pstmt = conn.prepareStatement("select 1 from usuario where nick=?");
 			pstmt.setString(1, registro.getNick());
-			pstmt.setString(2, new String(registro.getPassword()));
-			pstmt.setString(3, registro.getPregunta());
-			pstmt.setString(4, registro.getRespuesta());
-			pstmt.execute();			
+			pstmt.execute();
+			ResultSet rs = pstmt.getResultSet();
+			
+			if(!rs.next()){//si no hay otro usurio con el mismo nick insertamos
+				pstmt.close();
+				pstmt = conn.prepareStatement("Insert into Usuario values(null, ?, ?, ?, ?)");
+				pstmt.setString(1, registro.getNick());
+				pstmt.setString(2, new String(registro.getPassword()));
+				pstmt.setString(3, registro.getPregunta());
+				pstmt.setString(4, registro.getRespuesta());
+				pstmt.execute();
+				return true;
+			}
 		} catch(SQLException sqle) {
 			sqle.printStackTrace();
 		} finally {
@@ -144,7 +227,8 @@ public class HiloDeCliente extends Thread{
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}	
+		}
+		return false;
 	}
 
 	public ArrayList<Socket> getUsuarios() {
