@@ -11,7 +11,7 @@ public class Cliente extends Thread{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	// DATOS NECESARIOS PARA LA CONEXION
-	private static final String host ="10.11.3.2";
+	private static final String host ="10.11.4.24";
 	private static final int puerto = 5000;
 	
 	private Object objLeido;
@@ -46,7 +46,8 @@ public class Cliente extends Thread{
 	
 	public Object escuchar(){
 		try {
-			return in.readObject();
+			Object peticion = in.readObject();
+			return peticion;
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,7 +63,7 @@ public class Cliente extends Thread{
 			out.reset(); // USAR SIEMPRE
 			out.writeObject(obj);
 			//out.reset(); // USAR SIEMPRE
-			//out.flush();
+			out.flush();
 			objLeido = (Object)in.readObject();
 			System.out.println(objLeido);
 			

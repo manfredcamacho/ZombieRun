@@ -98,6 +98,8 @@ public class Escenario extends JFrame {
 		contentPane.add(escenario);
 		
 		
+		HiloDeJuego();
+		
 	}
 	
 	
@@ -142,8 +144,12 @@ public class Escenario extends JFrame {
 				
 				while( true ){
 					Object peticion = clientSocket.escuchar();
+					
+					System.out.println("hola");
 					if( peticion instanceof EscenarioBean ){
-						
+						dibujarEscenario(((EscenarioBean)peticion).getMapa(),
+										 ((EscenarioBean)peticion).getTamX(),
+										 ((EscenarioBean)peticion).getTamY());
 					}
 				}
 				
@@ -160,6 +166,7 @@ public class Escenario extends JFrame {
 				try {
 					Escenario frame = new Escenario();
 					frame.setVisible(true);
+					
 
 				} catch (Exception e) {
 					e.printStackTrace();

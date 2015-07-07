@@ -112,9 +112,9 @@ public class Lobby extends JFrame {
 														 * OBJETO QUE SE
 														 * ALMACENA
 														 */>();
-//		modelo.addElement("Zombilandia               6/9         REGISTRANDO");
-//		modelo.addElement("GuisoDeCerebros        1/4         REGISTRANDO");
-//		modelo.addElement("JuegosDelHambre       4/4         EN CURSO");
+		modelo.addElement("Zombilandia               6/9         REGISTRANDO");
+		modelo.addElement("GuisoDeCerebros        1/4         REGISTRANDO");
+		modelo.addElement("JuegosDelHambre       4/4         EN CURSO");
 		listPartidas.setModel(modelo);
 		listPartidas.setOpaque(true);
 		listPartidas.setBackground(new Color(0,0,0,100));
