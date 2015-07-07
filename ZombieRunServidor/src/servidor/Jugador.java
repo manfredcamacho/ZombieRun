@@ -14,7 +14,7 @@ public class Jugador {
 	private int x;
 	private int y;
 	private int direccion; // 0 arriba - 1 abajo - 2 izquierda - 3 derecha
-	
+	private String nick;
 	
 	
 	
@@ -70,6 +70,14 @@ public class Jugador {
 
 	public void setOut(ObjectOutputStream out) {
 		this.out = out;
+	}
+
+	public String getNick() {
+		return nick;
+	}
+
+	public void setNick(String nick) {
+		this.nick = nick;
 	}
 
 	

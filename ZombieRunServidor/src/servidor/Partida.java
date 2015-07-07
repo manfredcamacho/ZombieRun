@@ -4,8 +4,7 @@ package servidor;
 import java.util.*;
 import java.io.IOException;
 
-import clasesPrincipales.Figura;
-
+import clasesPrincipales.*;
 
 public class Partida {
 
@@ -22,13 +21,41 @@ public class Partida {
 	private Figura[][] escenario;
 	private ArrayList<Jugador>jugadores;
 	
-	public Partida(int i, String nom, int cantMax, int cantMin ){
+	
+	///////////////MAPAS////////////////////////
+	
+	private static final char[][] murosMapa1 ={
+		{'X','X','X','X','X'},
+		{'X',' ',' ',' ','X'},
+		{'X',' ',' ',' ','X'},
+		{'X',' ',' ',' ','X'},
+		{'X','X','X','X','X'}
+	};
+	
+	////////////////////////////////////////////
+	
+	
+	
+	
+	public Partida(int i, String nom, int cantMax, int cantMin, int idMapa ){
 		id = i;
 		setNombre(nom);
 		cantJugadoresMax = cantMax;
 		setCantJugadoresMin(cantMin);
 		cantJugadoresEnCurso = 0;
 		jugadores = new ArrayList<Jugador>();
+		
+		
+		if( idMapa == 1 ){
+			escenario = new Figura[5][5];
+			for (int j = 0; j < 5; j++) {
+				for (int j2 = 0; j2 < 5; j2++) {
+					if( murosMapa1[j][j2] == 'X'){
+						escenario[j][j2] = new Bloque();
+					}
+				}
+			}
+		}
 		
 	}
 	
@@ -39,8 +66,8 @@ public class Partida {
 			System.out.println( "CANTIDAD DE JUGADORES EN CURSO : " + cantJugadoresEnCurso );
 			
 			if( cantJugadoresEnCurso == cantJugadoresMax ){
+				generarPosiciones();
 				enviarMapa();
-				recibirDirecciones();
 			}
 			
 		}else{
@@ -48,26 +75,6 @@ public class Partida {
 		}
 	}
 	
-	// NO SE SI ESTA BIEN, REVISAR CREO UN HILO POR CADA JUGADOR UNA VEZ QUE SE RECIBE LA DIRECCION EL HILO SE CIERRA
-	public void recibirDirecciones(){
-		for (final Jugador jugador : jugadores) {
-			Thread hilo = new Thread( new Runnable(){
-				public void run(){
-				try {
-					System.out.println("escuchando....");
-					Object aux = jugador.getIn().readObject(); // LEEMOS LA DIRECCION A LA QUE QUIERE IR
-					jugador.setDireccion((Integer)aux);
-					System.out.println("EL JUGADOR :" + jugador.getClientSocket().getInetAddress()
-							+ " SE MOVIO HACIA " + jugador.getDireccion());
-					jugador.getOut().writeObject("OK");
-					this.finalize();
-				}catch (Throwable e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}}} );
-			hilo.start();
-		}
-	}
 	
 	public void enviarMapa(){ // POR CADA JUGADOR DE EL ARRAYLIST ENVIO EL MAPA
 		System.out.println("ENVIANDO MAPA A LOS JUGADORES...");
@@ -80,6 +87,27 @@ public class Partida {
 			}
 		}
 	}
+	
+	
+	public void generarPosiciones(){
+		Random rand = new Random();
+		for (Jugador jugador : jugadores) {
+			boolean seColoco = false;
+			while( seColoco == false ){
+				int x = rand.nextInt()%murosMapa1.length;
+				System.out.println(x);
+				int y = rand.nextInt()%murosMapa1.length;
+				System.out.println(y);
+				if( x >= 0 && y >= 0 && escenario[x][y] == null ){
+					escenario[x][y] = new Personaje(jugador.getNick(), x, y, false);
+					seColoco = true;
+				}
+			}
+		}
+	}
+	
+	
+	
 
 	public String getNombre() {
 		return nombre;

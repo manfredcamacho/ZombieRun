@@ -64,7 +64,6 @@ public class HiloDeCliente extends Thread{
 					frame.mostrarMensajeFrame("SE AGREGO EL JUGADOR " + clientSocket.getInetAddress());
 					out.writeObject("AGREGADO");
 					this.finalize();
-					in.wait();
 					
 					//this.finalize(); // DUDO QUE ESTE BIEN
 					// PERO SERIA UNA FORMA DE DETENER ESTE HILO PARA QUE LO
@@ -148,7 +147,7 @@ public class HiloDeCliente extends Thread{
 		String preguntaSecreta = null;
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = conn.prepareStatement(" select preguntaSecreta from usuario where nick = ?");
+			pstmt = conn.prepareStatement("select preguntaSecreta from usuario where nick = ?");
 			pstmt.setString(1, peticion.getNick());
 			pstmt.execute();
 			System.out.println(pstmt.toString());
