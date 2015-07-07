@@ -24,6 +24,8 @@ import comunicacion.LoginBean;
 
 
 
+import comunicacion.RecuperarBean;
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -196,9 +198,9 @@ public class Login extends JFrame{
 	}
 	
 	public void abrirValidacionPreg(){
-			@SuppressWarnings("unused")
-			ValidacionPreg vp = new ValidacionPreg(this, nick);
-			this.setVisible(false);
+		@SuppressWarnings("unused")
+		ValidacionPreg vp = new ValidacionPreg(this, nick);
+		this.setVisible(false);	
 	}
 	
 	public void intento(){
@@ -210,9 +212,11 @@ public class Login extends JFrame{
 	}
 	
 	public void validar(){
-		//System.out.println("Se presiono ingresar");
+		//validamos que los campos no esten vacios
 		client.enviarMensaje(new LoginBean(tfUsuario.getText(), tfPassword.getPassword()));
-		if( client.leerMensaje().equals("INGRESADO") ){
+		if(tfUsuario.getText().trim().length() == 0 || tfPassword.getPassword().length == 0){
+			JOptionPane.showMessageDialog(this,"Complete todos los campos","Campo vacio", JOptionPane.WARNING_MESSAGE);
+		}else if( client.leerMensaje().equals("INGRESADO") ){
 			abrirLobby();
 			tfUsuario.setText("");
 			tfPassword.setText("");
@@ -225,7 +229,12 @@ public class Login extends JFrame{
 			tfUsuario.requestFocus();
 		}
 		if( cantIntentos == 3 ){
-			abrirValidacionPreg();
+			client.enviarMensaje(new RecuperarBean(nick));
+			if(client.leerMensaje().equals("NICK INVALIDO")){
+				JOptionPane.showMessageDialog(this,"El usuario no existe.","Nick Invalido", JOptionPane.WARNING_MESSAGE);
+				setIntento();
+			}else
+				abrirValidacionPreg();
 		}
 	}
 	

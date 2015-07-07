@@ -19,6 +19,8 @@ import comunicacion.ValidarRespuestaBean;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Toolkit;
@@ -43,11 +45,20 @@ public class ValidacionPreg extends JFrame {
 				cerrarPrograma();
 			}
 		});
+		addComponentListener(new ComponentAdapter() {
+			public void componentHidden(ComponentEvent e) 
+			{
+			    /* code run when component hidden*/
+			}
+			public void componentShown(ComponentEvent e) {
+			    TFrespuesta.requestFocus();
+			}
+		});
 		login = log;
 		setTitle("\u00BFHa olvidado su contrase\u00F1a?");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setResizable(false);
-		this.setVisible(true);
+		
 		setBounds(100, 100, 489, 324);		
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
@@ -112,8 +123,8 @@ public class ValidacionPreg extends JFrame {
 		label.setBounds(0, 0, 473, 296);
 		label.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_5.jpg", label));
 		
-		TFrespuesta.requestFocus();
 		contentPane.add(label);
+		this.setVisible(true);
 	}
 	
 	public static void multilineaTextArea(JTextArea area) {
@@ -141,21 +152,28 @@ public class ValidacionPreg extends JFrame {
 	
 	private void cargarPreguntaSecreta(String nick){
 		login.getClient().enviarMensaje(new RecuperarBean(nick));
-		if(login.getClient().leerMensaje().equals("NICK INVALIDO"))
+		if(login.getClient().leerMensaje().equals("NICK INVALIDO")){
 			JOptionPane.showMessageDialog(this,"El usuario no existe.","Nick Invalido", JOptionPane.WARNING_MESSAGE);
+			salir();
+		}
 		else
 			this.TFpregunta.setText((String) login.getClient().leerMensaje());
 	}
 	
 	private void validar(String nick){
-		login.getClient().enviarMensaje(new ValidarRespuestaBean(nick, this.TFrespuesta.getText()));
-		if(login.getClient().leerMensaje().equals("RESPUESTA INVALIDA")){
-			JOptionPane.showMessageDialog(this,"La respuesta ingresa no es la correcta.","Respuesta Invalida", JOptionPane.WARNING_MESSAGE);
-			TFrespuesta.setText("");
-			TFrespuesta.requestFocus();
-		}else{
-			JOptionPane.showMessageDialog(this,(String) login.getClient().leerMensaje(), "Tu contraseña", JOptionPane.INFORMATION_MESSAGE);
-			salir();
+		//validamos que los campos no esten vacios
+		if(TFrespuesta.getText().trim().length() == 0)
+			JOptionPane.showMessageDialog(this,"Debe contestar a la pregunta.","Campo vacio", JOptionPane.WARNING_MESSAGE);
+		else{
+			login.getClient().enviarMensaje(new ValidarRespuestaBean(nick, this.TFrespuesta.getText()));
+			if(login.getClient().leerMensaje().equals("RESPUESTA INVALIDA")){
+				JOptionPane.showMessageDialog(this,"La respuesta ingresa no es la correcta.","Respuesta Invalida", JOptionPane.WARNING_MESSAGE);
+				TFrespuesta.setText("");
+				TFrespuesta.requestFocus();
+			}else{
+				JOptionPane.showMessageDialog(this,(String) login.getClient().leerMensaje(), "Tu contraseña", JOptionPane.INFORMATION_MESSAGE);
+				salir();
+			}
 		}
 	}
 }

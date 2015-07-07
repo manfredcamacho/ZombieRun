@@ -1,4 +1,5 @@
 package ventanas;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,7 +11,7 @@ public class Cliente extends Thread{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	// DATOS NECESARIOS PARA LA CONEXION
-	private static final String host ="127.0.0.1";
+	private static final String host ="10.11.3.2";
 	private static final int puerto = 5000;
 	
 	private Object objLeido;
@@ -42,6 +43,19 @@ public class Cliente extends Thread{
 //			}
 //		}
 //	}
+	
+	public Object escuchar(){
+		try {
+			return in.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public void enviarMensaje( Object obj ){
 		try {

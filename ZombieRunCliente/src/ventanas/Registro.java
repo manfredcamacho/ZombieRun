@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.Arrays;
 
 public class Registro extends JFrame {
 
@@ -189,13 +190,19 @@ public class Registro extends JFrame {
 					this.dispose();
 				}
 			}
-		}else
-			mostrarMensaje("Campo inválido", JOptionPane.WARNING_MESSAGE);
+		}
 		
 	}
 
 	private boolean validarCampos() {
-		// TODO Auto-generated method stub
+		if(textField.getText().trim().length() == 0 || textField_1.getText().trim().length() == 0 || textField_2.getText().trim().length() == 0
+				|| passwordField.getPassword().length == 0 || passwordField_1.getPassword().length == 0){
+			JOptionPane.showMessageDialog(this,"Complete todos los campos","Campo vacio", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}else if(!Arrays.equals(passwordField.getPassword(),passwordField_1.getPassword())){
+			JOptionPane.showMessageDialog(this,"Las contraseñas no coinciden","Contraseña invalida", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
 		return true;
 	}
 

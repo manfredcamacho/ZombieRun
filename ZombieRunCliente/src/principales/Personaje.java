@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-public class Jugador extends Figura implements Serializable{
+public class Personaje extends Figura implements Serializable{
 
 	/**
 	 * 
@@ -18,7 +18,7 @@ public class Jugador extends Figura implements Serializable{
 	
 	/***CONDICION AGREGADA POR CAMILA**/
 	
-	public Jugador(String nick , int x, int y, boolean condicion) {
+	public Personaje(String nick , int x, int y, boolean condicion) {
 		super();
 		this.esZombie = condicion; 
 		this.nick = nick;
@@ -35,21 +35,16 @@ public class Jugador extends Figura implements Serializable{
 		
 	}
 	
-	public Jugador(boolean bandera){
+	public Personaje(boolean bandera){
 		esZombie = true;
 	}
-	public boolean getCondicion(){
+	public boolean esZombie(){
 		return esZombie;
 		
 	}
 	
-	public void seConvierte(boolean seConvirtio){
-		esZombie = seConvirtio;
-//		img.setIcon(new ImageIcon(Jugador.class.getResource("/zombie.jpg")));
-	}
-	
-	public void setCondicion(boolean cond){
-		esZombie = cond;
+	public void convertir(){
+		esZombie = true;
 	}
 	
 	public int getX() {
