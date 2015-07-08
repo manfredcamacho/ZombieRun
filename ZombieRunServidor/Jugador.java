@@ -15,16 +15,7 @@ public class Jugador {
 	private int y;
 	private int direccion; // 0 arriba - 1 abajo - 2 izquierda - 3 derecha
 	private String nick;
-	public boolean isEnvieDireccion() {
-		return envieDireccion;
-	}
-
-	public void setEnvieDireccion(boolean envieDireccion) {
-		this.envieDireccion = envieDireccion;
-	}
-
 	private boolean estoyListo;
-	private boolean envieDireccion;
 	
 	public boolean isEstoyListo() {
 		return estoyListo;

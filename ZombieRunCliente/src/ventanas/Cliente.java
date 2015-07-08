@@ -11,14 +11,15 @@ public class Cliente extends Thread{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	// DATOS NECESARIOS PARA LA CONEXION
-	private static final String host ="10.11.4.24";
+	private static final String host ="10.11.3.2";
 	private static final int puerto = 5000;
-	
+	private int jugador;
 	private Object objLeido;
 		
 	public Cliente() throws ClassNotFoundException{
 		// GENERAMOS LA CONEXION
 		try {
+			jugador = 0;
 			socket = new Socket(host,puerto);
 			out = new ObjectOutputStream( socket.getOutputStream());
 			in = new ObjectInputStream( socket.getInputStream() );
@@ -44,15 +45,19 @@ public class Cliente extends Thread{
 //		}
 //	}
 	
+	public ObjectOutputStream getOut() {
+		return out;
+	}
+
 	public Object escuchar(){
 		try {
+			System.out.println(in.toString());
 			Object peticion = in.readObject();
+			objLeido = peticion;
 			return peticion;
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -64,7 +69,11 @@ public class Cliente extends Thread{
 			out.writeObject(obj);
 			//out.reset(); // USAR SIEMPRE
 			out.flush();
+			
 			objLeido = (Object)in.readObject();
+			if( objLeido instanceof Integer ){
+				jugador = (Integer)objLeido; // REPRESENTA AL JUGADOR EN JUEGO
+			}
 			System.out.println(objLeido);
 			
 		} catch (Exception e) {
@@ -72,10 +81,22 @@ public class Cliente extends Thread{
 		}
 	}
 	
+	public int getJugador() {
+		return jugador;
+	}
+
+	public void setJugador(int jugador) {
+		this.jugador = jugador;
+	}
+
 	public Object leerMensaje(){
 		return objLeido;
 	}
 	
+	public ObjectInputStream getIn() {
+		return in;
+	}
+
 	public void cerrarSocket(){
 		try {
 			enviarMensaje("KILL THREAD");

@@ -1,6 +1,7 @@
 package comunicacion;
 import java.io.Serializable;
-import principales.*;
+
+import clasesPrincipales.*;
 public class EscenarioBean implements Serializable {
 
 	

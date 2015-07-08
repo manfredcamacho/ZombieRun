@@ -16,6 +16,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.Timer;
 
+import comunicacion.EscenarioBean;
+import comunicacion.estoyListoBean;
+
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -122,18 +125,37 @@ public class Espera extends JFrame {
 		 *
 		 * 
 		*/
-		timer = new Timer(1000, new ActionListener() {			
-			int elapsedSeconds = 5;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				elapsedSeconds--;
-		        lblTimer.setText(Integer.toString(elapsedSeconds));
-		        if(elapsedSeconds == 0){
-		           timer.stop();
-		           abrirPartida();				// ( ! )
-		        }
-		}});
-		timer.start();
+		
+		Thread hilo = new Thread( new Runnable(){
+			public void run(){
+				Object obj =  (Object)clientSocket.escuchar();
+				if( obj instanceof EscenarioBean )
+						System.out.println(clientSocket.leerMensaje());
+						timer = new Timer(1000, new ActionListener() {			
+							int elapsedSeconds = 5;
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								elapsedSeconds--;
+						        lblTimer.setText(Integer.toString(elapsedSeconds));
+						        if(elapsedSeconds == 0){
+						           timer.stop();
+						           System.out.println("Enviando OKEY");
+						           clientSocket.enviarMensaje(new estoyListoBean(clientSocket.getJugador()));
+						           abrirPartida();				// ( ! )
+						           try {
+									this.finalize();
+								} catch (Throwable e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+						        }
+						}});
+						timer.start();
+				
+			}		
+		});
+		hilo.start();
+
 		
 		
 		/*
@@ -192,7 +214,7 @@ public class Espera extends JFrame {
 	
 	public void abrirPartida(){
 		//Partida partida = new Partida(this, clientSocket);
-		Escenario escenario = new Escenario();
+		Escenario escenario = new Escenario( clientSocket );
 		escenario.setVisible(true);
 		this.setVisible(false);
 	}

@@ -1,4 +1,4 @@
-package principales;
+package clasesPrincipales;
 
 import java.io.Serializable;
 

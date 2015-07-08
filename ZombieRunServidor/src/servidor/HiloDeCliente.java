@@ -60,12 +60,9 @@ public class HiloDeCliente extends Thread{
 				
 				// REEMPLAZAR POR UN SWITCH
 				if( peticion instanceof IngresarPartida ){
-					partida.agregarJugador( new Jugador(clientSocket,out,in)); // DUDO QUE ESTE BIEN
+					partida.agregarJugador( new Jugador(clientSocket,out,in));
 					frame.mostrarMensajeFrame("SE AGREGO EL JUGADOR " + clientSocket.getInetAddress());
-					out.writeObject("AGREGADO");
-					this.finalize();
-					
-					//this.finalize(); // DUDO QUE ESTE BIEN
+					//this.finalize();
 					// PERO SERIA UNA FORMA DE DETENER ESTE HILO PARA QUE LO
 					
 				}else if( peticion instanceof LoginBean ){
@@ -105,6 +102,12 @@ public class HiloDeCliente extends Thread{
 						out.writeObject("RESPUESTA INVALIDA");
 					else
 						out.writeObject(respuesta);
+				}else if( peticion instanceof estoyListoBean ){
+					System.out.println(((estoyListoBean) peticion).getId()-1);
+					partida.getJugadores().get( ((estoyListoBean) peticion).getId()-1).setEstoyListo(true);
+				}else if( peticion instanceof DireccionBean ){
+						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setEnvieDireccion(true);
+						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setDireccion(((DireccionBean) peticion).getDireccion());
 				}else{
 					frame.mostrarMensajeFrame("no se reconoce al objeto.");
 				}

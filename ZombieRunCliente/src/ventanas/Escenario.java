@@ -2,6 +2,7 @@ package ventanas;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -12,14 +13,15 @@ import java.awt.Color;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 
+import clasesPrincipales.*;
 import comunicacion.*;
-import principales.*;
 
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 public class Escenario extends JFrame {
 
@@ -31,7 +33,7 @@ public class Escenario extends JFrame {
 	private JPanel escenario; 
 	
 	// SE ALMACENA HACIA DONDE SE QUIERE MOVER EL JUGADOR Y SE INICIALIZA CADA VEZ QUE LLEGA EL MAPA
-	private int direccion;
+	private int direccion; // 0 NO SE MOVIO - 1 ARRIBA - 2 ABAJO - 3 IZQUIERDA - 4 DERECHA
 	
 	// OBJETO EL CUAL NOS PERMITE MANTENER LA COMUNICACION CON EL SERVIDOR
 	private Cliente clientSocket;
@@ -44,7 +46,10 @@ public class Escenario extends JFrame {
 	
 	
 	
-	public Escenario() {
+	public Escenario( Cliente client) {
+		
+		direccion = 0;
+		clientSocket = client;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
@@ -56,6 +61,7 @@ public class Escenario extends JFrame {
 		JButton btnIzquierda = new JButton("");
 		btnIzquierda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				direccion = 3;
 			}
 		});
 		btnIzquierda.setIcon(new ImageIcon(Escenario.class.getResource("/imagenes/izquierda.jpg")));
@@ -66,6 +72,7 @@ public class Escenario extends JFrame {
 		JButton btnAbajo = new JButton("");
 		btnAbajo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				direccion = 2;
 			}
 		});
 		btnAbajo.setIcon(new ImageIcon(Escenario.class.getResource("/imagenes/abajo.jpg")));
@@ -75,6 +82,7 @@ public class Escenario extends JFrame {
 		JButton btnDerecha = new JButton("");
 		btnDerecha.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				direccion = 4;
 			}
 		});
 		btnDerecha.setIcon(new ImageIcon(Escenario.class.getResource("/imagenes/derecha.jpg")));
@@ -84,7 +92,7 @@ public class Escenario extends JFrame {
 		JButton btnArriba = new JButton("");
 		btnArriba.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			
+				direccion = 1;
 			}
 		});
 		btnArriba.setIcon(new ImageIcon(Escenario.class.getResource("/imagenes/arriba.jpg")));
@@ -96,8 +104,9 @@ public class Escenario extends JFrame {
 		escenario.setLayout(null);
 			
 		contentPane.add(escenario);
-		
-		
+		dibujarEscenario(((EscenarioBean)clientSocket.leerMensaje()).getMapa(),
+				((EscenarioBean)clientSocket.leerMensaje()).getTamX(), 
+				((EscenarioBean)clientSocket.leerMensaje()).getTamY());
 		HiloDeJuego();
 		
 	}
@@ -106,6 +115,18 @@ public class Escenario extends JFrame {
 	// ESTE METODO SE ENCARGA DE DIBUJAR EL MAPA
 	public void dibujarEscenario( Figura[][] mapa, int tamX, int tamY ){
 		
+		
+		for (int i = 0; i < mapa.length; i++) {
+			for (int j = 0; j < mapa.length; j++) {
+				if( mapa[i][j] instanceof Bloque )
+					System.out.print("B ");
+				else if ( mapa[i][j] instanceof Personaje )
+					System.out.print("P ");
+				else
+					System.out.print("  ");
+			}
+			System.out.println();
+		}
 		
 		escenario.removeAll();
 		escenario.setBounds(10, 10, tamX*25, tamY*25);
@@ -119,14 +140,18 @@ public class Escenario extends JFrame {
 					escenario.add(muroAux);
 				}else if( mapa[i][j] instanceof Personaje ){
 					if( ((Personaje)mapa[i][j]).esZombie() ){
-						escenario.add( new JLabel(zombie));
+						JLabel muroAux = new JLabel(zombie);
+						muroAux.setBounds(i*25, j*25, 25, 25);
+						escenario.add(muroAux);
 					}else{
-						escenario.add( new JLabel(humano));
+						JLabel muroAux = new JLabel(humano);
+						muroAux.setBounds(i*25, j*25, 25, 25);
+						escenario.add(muroAux);
 					}
 				}
 			}
 		}
-		
+		escenario.revalidate();
 		escenario.repaint();
 	}
 	
@@ -143,35 +168,34 @@ public class Escenario extends JFrame {
 			public void run(){
 				
 				while( true ){
+					System.out.println("Esperando el escenario...");
 					Object peticion = clientSocket.escuchar();
+					System.out.println("Termino de escuchar");
+					System.out.println("Se recibio : " + peticion.getClass().getName());
 					
-					System.out.println("hola");
 					if( peticion instanceof EscenarioBean ){
+						System.out.println("Se recibio el escenario");
+				
 						dibujarEscenario(((EscenarioBean)peticion).getMapa(),
 										 ((EscenarioBean)peticion).getTamX(),
 										 ((EscenarioBean)peticion).getTamY());
+					}else if( peticion.equals("DIRECCION")){
+						System.out.println("NOS PIDIERON DIRECCION");
+						try {
+							clientSocket.getOut().writeObject(new DireccionBean(direccion,clientSocket.getJugador()));
+							System.out.println("ENVIAMOS NUESTRA DIRECCION");
+							direccion = 0;
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
+
 				}
 				
 			}
 		});
 		hiloDeJuego.start();
 	}
-	
-	
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Escenario frame = new Escenario();
-					frame.setVisible(true);
-					
 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 }
