@@ -8,9 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-
-import com.mysql.jdbc.log.LogUtils;
-
 import comunicacion.*;
 
 public class HiloDeCliente extends Thread{
@@ -125,6 +122,9 @@ public class HiloDeCliente extends Thread{
 				}else if( peticion instanceof DireccionBean ){
 						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setEnvieDireccion(true);
 						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setDireccion(((DireccionBean) peticion).getDireccion());
+				}else if( peticion instanceof RankingBean ){
+					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de ranking.");
+					out.writeObject(retornarRanking((RankingBean)peticion));
 				}else{
 					frame.mostrarMensajeFrame("no se reconoce al objeto.");
 				}
@@ -134,6 +134,34 @@ public class HiloDeCliente extends Thread{
 		}
 	}
 	
+	
+	//////////////METODOS PARA EL MANEJO DE BASE DE DATOS////////
+	
+	private RankingBean retornarRanking(RankingBean peticion) {
+		PreparedStatement pstmt = null;
+		try {
+			if(peticion.isTop20())
+				pstmt = conn.prepareStatement("select u.nick nick, e.puntos puntos from usuario u join estadistica e on(u.id = e.id_usuario) order by e.puntos DESC limit 20");
+			else
+				pstmt = conn.prepareStatement("select u.nick nick, e.puntos puntos from usuario u join estadistica e on(u.id = e.id_usuario) order by e.puntos DESC");
+			System.out.println(pstmt.toString());
+			pstmt.execute();
+			ResultSet rs = pstmt.getResultSet();
+			int posicion = 1;
+			while(rs.next()){
+                String[] fila = new String[3];//Creamos un Objeto con tantos parámetros como datos retorne cada fila 
+                                             // de la consulta
+                fila[0] = (posicion++)+"°";
+                fila[1] = rs.getString("nick"); //Lo que hay entre comillas son los campos de la base de datos
+                fila[2] = rs.getString("puntos");
+                peticion.getModelo().addRow(fila); // Añade una fila al final del modelo de la tabla
+            }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return peticion;
+	}
+
 	private void actualizarDatos(ActualizarDatosBean peticion) {
 		PreparedStatement pstmt = null;
 		try {
@@ -177,8 +205,6 @@ public class HiloDeCliente extends Thread{
 		}
 		return respuesta;
 	}	
-	
-	//////////////METODOS PARA EL MANEJO DE BASE DE DATOS////////
 
 	private DatosUsuarioBean devolverDatosCliente(DatosUsuarioBean peticion) {
 		PreparedStatement pstmt = null;

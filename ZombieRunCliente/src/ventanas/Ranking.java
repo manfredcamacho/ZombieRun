@@ -20,6 +20,9 @@ import java.awt.Font;
 
 import javax.swing.JButton;
 
+import clasesPrincipales.TablaRanking;
+import comunicacion.RankingBean;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -30,11 +33,14 @@ public class Ranking extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable table;
+	private TablaRanking modelo;
 	private JFrame frame;
+	private Cliente cliente;
 	
 	
-	public Ranking(JFrame frame){
+	public Ranking(JFrame frame, Cliente cliente){
 		this.frame = frame;
+		this.cliente = cliente;
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -55,7 +61,9 @@ public class Ranking extends JFrame {
 		scrollPane.setBorder(new EmptyBorder(5, 20, 5, 5));
 		contentPane.add(scrollPane);
 		
-		table = new JTable(new TablaRanking(frame));		
+		modelo = new TablaRanking();
+		table = new JTable();	
+		rellenarTabla(modelo);
 		table.setFont(new Font("Tahoma", 0, 15));
 		table.setForeground(Color.WHITE);
 		table.getTableHeader().setBackground(new Color(255, 255, 255, 100));
@@ -89,12 +97,22 @@ public class Ranking extends JFrame {
 			lblRankingGlobal.setText("TOP 20");
 			fondo.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_8.jpg", fondo));
 		}
-		
-		
 		contentPane.add(fondo);
 		setVisible(true);
 	}
 	
+	private void rellenarTabla(TablaRanking modelo) {
+		modelo.addColumn("Posicion");
+		modelo.addColumn("Nick");
+		modelo.addColumn("Puntos");
+		boolean top20 = false;
+		if(frame instanceof Estadistica)
+			top20 = true;
+		cliente.enviarMensaje(new RankingBean(modelo, top20));
+		modelo = ((RankingBean)cliente.leerMensaje()).getModelo();
+		table.setModel(modelo);
+	}
+
 	public void volver(){
 		frame.setVisible(true);
 		this.dispose();

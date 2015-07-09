@@ -150,7 +150,7 @@ public class Estadistica extends JFrame {
 	
 	public void abrirRanking() {
 		@SuppressWarnings("unused")
-		Ranking ranking = new Ranking(this);
+		Ranking ranking = new Ranking(this,lobby.getCliente());
 		this.setVisible(false);
 	}
 

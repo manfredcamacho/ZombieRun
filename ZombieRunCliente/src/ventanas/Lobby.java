@@ -187,7 +187,7 @@ public class Lobby extends JFrame {
 	
 	public void abrirRanking() {
 		@SuppressWarnings("unused")
-		Ranking ranking = new Ranking(this);
+		Ranking ranking = new Ranking(this, clientSocket);
 		this.setVisible(false);
 	}
 

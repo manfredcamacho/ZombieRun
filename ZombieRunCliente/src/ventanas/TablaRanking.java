@@ -95,7 +95,7 @@ public class TablaRanking extends AbstractTableModel {
 	 
 	 //Indica si la casilla identificada por fila y columna es editable
 	 public boolean isCellEditable( int fila,int col ) { 
-		 return( true ); 
+		 return( false ); 
 	 }
 }       
  
