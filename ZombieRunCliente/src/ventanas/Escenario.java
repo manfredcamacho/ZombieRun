@@ -2,11 +2,13 @@ package ventanas;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.Color;
@@ -37,6 +39,11 @@ public class Escenario extends JFrame {
 	
 	// OBJETO EL CUAL NOS PERMITE MANTENER LA COMUNICACION CON EL SERVIDOR
 	private Cliente clientSocket;
+	
+	// TIMER
+	private JLabel lblTimer;
+	private Timer timer;
+	
 	
 	//IMAGENES
 	private static final ImageIcon humano = new ImageIcon( Escenario.class.getResource("/humano.jpg"));
@@ -103,6 +110,14 @@ public class Escenario extends JFrame {
 		escenario.setBackground(Color.BLACK);
 		escenario.setLayout(null);
 			
+		
+		lblTimer = new JLabel("4");
+		lblTimer.setBounds(335, 236, 46, 14);
+		lblTimer.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblTimer.setForeground(Color.WHITE);
+		contentPane.add(lblTimer);
+	
+		
 		contentPane.add(escenario);
 		dibujarEscenario(((EscenarioBean)clientSocket.leerMensaje()).getMapa(),
 				((EscenarioBean)clientSocket.leerMensaje()).getTamX(), 
@@ -180,6 +195,24 @@ public class Escenario extends JFrame {
 										 ((EscenarioBean)peticion).getTamX(),
 										 ((EscenarioBean)peticion).getTamY());
 					}else if( peticion.equals("DIRECCION")){
+						
+						
+						timer = new Timer(1000, new ActionListener() {			
+							int elapsedSeconds = 4;
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								elapsedSeconds--;
+						        lblTimer.setText(Integer.toString(elapsedSeconds));
+						        if(elapsedSeconds == 0){
+						           elapsedSeconds = 4;
+						           timer.restart();
+						        }
+							}
+						});
+						timer.start();
+
+						
+						
 						System.out.println("NOS PIDIERON DIRECCION");
 						try {
 							clientSocket.getOut().writeObject(new DireccionBean(direccion,clientSocket.getJugador()));
