@@ -47,6 +47,7 @@ public class Login extends JFrame{
 	private int cantIntentos = 0;
 	private Cliente client;
 	private String nick;
+	private int idUsuario;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -216,30 +217,45 @@ public class Login extends JFrame{
 		client.enviarMensaje(new LoginBean(tfUsuario.getText(), tfPassword.getPassword()));
 		if(tfUsuario.getText().trim().length() == 0 || tfPassword.getPassword().length == 0){
 			JOptionPane.showMessageDialog(this,"Complete todos los campos","Campo vacio", JOptionPane.WARNING_MESSAGE);
-		}else if( client.leerMensaje().equals("INGRESADO") ){
-			abrirLobby();
-			tfUsuario.setText("");
-			tfPassword.setText("");
 		}else{
-			intento();
-			JOptionPane.showMessageDialog(null, "Usuario / Contraseña incorrecta");
 			this.nick = tfUsuario.getText();
-			tfUsuario.setText("");
-			tfPassword.setText("");
-			tfUsuario.requestFocus();
-		}
-		if( cantIntentos == 3 ){
-			client.enviarMensaje(new RecuperarBean(nick));
-			if(client.leerMensaje().equals("NICK INVALIDO")){
-				JOptionPane.showMessageDialog(this,"El usuario no existe.","Nick Invalido", JOptionPane.WARNING_MESSAGE);
-				setIntento();
-			}else
-				abrirValidacionPreg();
+			if( client.leerMensaje() instanceof LoginBean ){
+				abrirLobby();
+				idUsuario = ((LoginBean)client.leerMensaje()).getIdUsuario();
+				tfUsuario.setText("");
+				tfPassword.setText("");
+			}else{
+				intento();
+				JOptionPane.showMessageDialog(null, "Usuario / Contraseña incorrecta");
+				tfUsuario.setText("");
+				tfPassword.setText("");
+				tfUsuario.requestFocus();
+			}
+			if( cantIntentos == 3 ){
+				client.enviarMensaje(new RecuperarBean(nick));
+				if(client.leerMensaje().equals("NICK INVALIDO")){
+					JOptionPane.showMessageDialog(this,"El usuario no existe.","Nick Invalido", JOptionPane.WARNING_MESSAGE);
+					setIntento();
+				}else
+					abrirValidacionPreg();
+			}
 		}
 	}
 	
 	public Cliente getClient(){
 		return client;
+	}
+	
+	public String getNick(){
+		return this.nick;
+	}
+	
+	public int getIdUsuario() {
+		return idUsuario;
+	}
+
+	public void setIdUsuario(int idUsuario) {
+		this.idUsuario = idUsuario;
 	}
 	
 }

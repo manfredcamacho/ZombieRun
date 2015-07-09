@@ -15,7 +15,8 @@ public class Cliente extends Thread{
 	private static final int puerto = 5000;
 	private int jugador;
 	private Object objLeido;
-		
+	private int idUsuario;
+
 	public Cliente() throws ClassNotFoundException{
 		// GENERAMOS LA CONEXION
 		try {
@@ -107,5 +108,15 @@ public class Cliente extends Thread{
 			e.printStackTrace();
 		}
 	}
+	
+	
+	public int getIdUsuario() {
+		return idUsuario;
+	}
+	
+	public void setIdUsuario(int id) {
+		this.idUsuario = id;
+	}
+
 	
 }

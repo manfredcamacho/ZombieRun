@@ -212,4 +212,12 @@ public class Lobby extends JFrame {
 	public void mostrarMensajeSatisfactorio(String msg, int tipo_mensaje){
 		JOptionPane.showMessageDialog(this, msg, "", tipo_mensaje, null);
 	}
+	
+	public Cliente getCliente(){
+		return this.clientSocket;
+	}
+	
+	public Login getLogin(){
+		return this.login;
+	}
 }
