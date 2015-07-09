@@ -14,9 +14,9 @@ public class MySQLConnection {
 		try {
 			if(conn == null) {	
 				String driver="com.mysql.jdbc.Driver"; //el driver varia segun la BD que usemos
-				String url="jdbc:mysql://localhost/zombie?autoReconnect=true";
-				String pwd="unlm2015";
-				String usr="root";
+				String url="jdbc:mysql://sql3.freesqldatabase.com:3306/sql383231";
+				String pwd="iH2*xV3!";
+				String usr="sql383231";
 				Class.forName(driver);
 				conn = DriverManager.getConnection(url,usr,pwd);
 				System.out.println("Se realizó la conexión con éxito");
