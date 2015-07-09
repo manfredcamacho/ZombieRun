@@ -24,7 +24,7 @@ public class Partida {
 	private ArrayList<Jugador>jugadores;
 	private int tamX;
 	private int tamY;
-	
+	private int empiezaZombie = 1;
 	///////////////MAPAS////////////////////////
 	
 	private static final char[][] murosMapa1 ={
@@ -75,23 +75,7 @@ public class Partida {
 				generarPosiciones();
 				enviarComienzo();
 				esperarJugadores();
-				
-				//
-				for (int i = 0; i < escenario.length; i++) {
-					for (int j = 0; j < escenario.length; j++) {
-						if( escenario[i][j] instanceof Bloque )
-							System.out.print("B ");
-						else if ( escenario[i][j] instanceof Personaje )
-							System.out.print("P ");
-						else
-							System.out.print("  ");
-					}
-					System.out.println();
-				}
-				//
-				
 				enviarMapa();
-				// COMENZAR PARTIDA
 				comenzarPartida();
 			}
 			
@@ -152,7 +136,7 @@ public class Partida {
 							pedirDirecciones();// MANDAMOS UN MENSAJE A LOS CLIENTES PARA RECIBIR LAS DIRECCIONES
 							esperarDirecciones();
 							moverJugadores();
-							//detectarInfecciones();				
+							detectarInfecciones();				
 							enviarMapa();
 						}
 					}catch (IOException e) {
@@ -166,6 +150,33 @@ public class Partida {
 			}
 		});
 		hiloPartida.start();
+	}
+
+	protected void detectarInfecciones() {
+		// TODO Auto-generated method stub
+		for (Jugador jugador : jugadores) {
+			int x = jugador.getX();
+			int y = jugador.getY();
+			if( ((Personaje)escenario[x][y]).esZombie() == false ){
+				if( escenario[x+1][y] instanceof Personaje && 
+						((Personaje)escenario[x+1][y]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+				if( escenario[x-1][y] instanceof Personaje &&
+						((Personaje)escenario[x-1][y]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+				if( escenario[x][y-1] instanceof Personaje &&
+						((Personaje)escenario[x][y-1]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+				if( escenario[x][y+1] instanceof Personaje &&
+						((Personaje)escenario[x][y+1]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+			}
+		}
+		
 	}
 
 	protected void moverJugadores() {
@@ -266,6 +277,7 @@ public class Partida {
 	
 	public void generarPosiciones(){
 		Random rand = new Random();
+		int cont = 1;
 		for (Jugador jugador : jugadores) {
 			boolean seColoco = false;
 			while( seColoco == false ){
@@ -274,12 +286,16 @@ public class Partida {
 				int y = rand.nextInt()%murosMapa1.length;
 				System.out.println(y);
 				if( x >= 0 && y >= 0 && escenario[x][y] == null ){
-					escenario[x][y] = new Personaje(jugador.getNick(), x, y, false);
+					if( cont == empiezaZombie )
+						escenario[x][y] = new Personaje(jugador.getNick(), x, y, true);
+					else
+						escenario[x][y] = new Personaje(jugador.getNick(), x, y, false);
 					jugador.setX(x);
 					jugador.setY(y);
 					seColoco = true;
 				}
 			}
+			cont++;
 		}
 	}
 	
