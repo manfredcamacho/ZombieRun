@@ -328,7 +328,7 @@ public class HiloDeCliente extends Thread{
 			
 			if(!rs.next()){//si no hay otro usurio con el mismo nick insertamos
 				pstmt.close();
-				pstmt = conn.prepareStatement("Insert into Usuario values(null, ?, ?, ?, ?)");
+				pstmt = conn.prepareStatement("Insert into usuario values(null, ?, ?, ?, ?)");
 				pstmt.setString(1, registro.getNick());
 				pstmt.setString(2, new String(registro.getPassword()));
 				pstmt.setString(3, registro.getPregunta());
