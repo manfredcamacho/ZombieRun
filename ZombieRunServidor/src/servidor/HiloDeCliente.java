@@ -132,6 +132,7 @@ public class HiloDeCliente extends Thread{
 					out.writeObject(retornarEstadisticas((EstadisticasBean)peticion));
 				}else if( peticion instanceof ActualizarPartidasBean ){
 						enviarPartidas((ActualizarPartidasBean)peticion);
+						System.out.println("Se envio la actualizacion");
 				}else{
 					frame.mostrarMensajeFrame("no se reconoce al objeto.");
 				}
@@ -369,11 +370,12 @@ public class HiloDeCliente extends Thread{
 			
 			if(!rs.next()){//si no hay otro usurio con el mismo nick insertamos
 				pstmt.close();
-				pstmt = conn.prepareStatement("Insert into usuario values(null, ?, ?, ?, ?)");
+				pstmt = conn.prepareStatement("Insert into usuario values(null, ?, ?, ?, ?); insert into estadistica values((select max(id) from usuario),0,0,0)");
 				pstmt.setString(1, registro.getNick());
 				pstmt.setString(2, new String(registro.getPassword()));
 				pstmt.setString(3, registro.getPregunta());
 				pstmt.setString(4, registro.getRespuesta());
+				System.out.println(pstmt);
 				pstmt.execute();
 				return true;
 			}

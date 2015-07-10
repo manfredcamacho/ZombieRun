@@ -20,6 +20,7 @@ import java.awt.Font;
 import javax.swing.JButton;
 
 import clasesPrincipales.TablaRanking;
+import comunicacion.DesconexionBean;
 import comunicacion.RankingBean;
 
 import java.awt.event.ActionListener;
@@ -159,7 +160,9 @@ public class Ranking extends JFrame {
 	public void salir(){
 		int res = JOptionPane.showConfirmDialog(this, "¿Seguro que desea salir?","Cerrando la aplicación...", JOptionPane.YES_NO_OPTION);
 		if(res == JOptionPane.YES_OPTION){
-			System.exit(0);
+			cliente.enviarMensaje(new DesconexionBean());
+			cliente.cerrarSocket();
+			this.dispose();
 		}
 	}
 }

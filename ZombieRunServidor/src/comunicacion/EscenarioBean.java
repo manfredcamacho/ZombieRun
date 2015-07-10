@@ -10,11 +10,24 @@ public class EscenarioBean implements Serializable {
 	private Figura[][] mapa;
 	private int tamX;
 	private int tamY;
+	private int x;
+	private int y;
 	
-	public EscenarioBean( Figura[][] m, int x, int y){
+	
+	public EscenarioBean( Figura[][] m, int x, int y, int px, int py){
 		mapa = m;
 		tamX = x;
 		tamY = y;
+		this.x = px;
+		this.y = py;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
 	}
 
 	public Figura[][] getMapa() {
@@ -28,5 +41,7 @@ public class EscenarioBean implements Serializable {
 	public int getTamY() {
 		return tamY;
 	}
+	
+	
 	
 }

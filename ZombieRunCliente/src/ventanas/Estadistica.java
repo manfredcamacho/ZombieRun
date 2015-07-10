@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Image;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,7 +14,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+
+import comunicacion.DesconexionBean;
 import comunicacion.EstadisticasBean;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -207,7 +211,9 @@ public class Estadistica extends JFrame {
 	public void salir(){
 		int res = JOptionPane.showConfirmDialog(this, "¿Seguro que desea salir?","Cerrando la aplicación...", JOptionPane.YES_NO_OPTION);
 		if(res == JOptionPane.YES_OPTION){
-			System.exit(0);
+			lobby.getCliente().enviarMensaje(new DesconexionBean());
+			lobby.getCliente().cerrarSocket();
+			this.dispose();
 		}
 	}
 	

@@ -122,7 +122,7 @@ public class ValidacionPreg extends JFrame {
 		
 		JLabel label = new JLabel("");
 		label.setBounds(0, 0, 473, 296);
-		label.setIcon(cargarImagenParaLabel("recursos/imagenes/fondo_5.jpg", label));
+		label.setIcon(cargarImagenParaLabel("/imagenes/fondo_5.jpg", label));
 		
 		contentPane.add(label);
 		this.setVisible(true);

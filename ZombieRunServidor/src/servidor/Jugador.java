@@ -15,6 +15,16 @@ public class Jugador {
 	private int y;
 	private int direccion; // 0 arriba - 1 abajo - 2 izquierda - 3 derecha
 	private String nick;
+	private boolean esZombie;
+	
+	public boolean isEsZombie() {
+		return esZombie;
+	}
+
+	public void setEsZombie(boolean esZombie) {
+		this.esZombie = esZombie;
+	}
+
 	public boolean isEnvieDireccion() {
 		return envieDireccion;
 	}

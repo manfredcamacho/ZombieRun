@@ -1,6 +1,8 @@
 package ventanas;
 
 import java.util.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -11,9 +13,14 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import javax.swing.JList;
+
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Image;
+
 import javax.swing.ListSelectionModel;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -22,6 +29,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
+
 import comunicacion.*;
 
 public class Lobby extends JFrame {

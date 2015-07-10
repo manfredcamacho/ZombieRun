@@ -256,7 +256,7 @@ public class Espera extends JFrame {
 	
 	public void abrirPartida(){
 		//Partida partida = new Partida(this, clientSocket);
-		Escenario escenario = new Escenario( clientSocket, idPartida );
+		Escenario escenario = new Escenario( clientSocket, idPartida, lobby );
 		escenario.setVisible(true);
 		this.setVisible(false);
 	}
