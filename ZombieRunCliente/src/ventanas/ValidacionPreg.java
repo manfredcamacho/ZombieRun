@@ -1,21 +1,19 @@
 package ventanas;
 
-import herramientas.cargadorRecursos;
-
 import java.awt.Font;
-
+import java.awt.Image;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
-
 import comunicacion.RecuperarBean;
 import comunicacion.ValidarRespuestaBean;
-
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -26,6 +24,8 @@ import java.awt.event.WindowEvent;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class ValidacionPreg extends JFrame {
 
@@ -54,6 +54,7 @@ public class ValidacionPreg extends JFrame {
 			    TFrespuesta.requestFocus();
 			}
 		});
+		
 		login = log;
 		setTitle("\u00BFHa olvidado su contrase\u00F1a?");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -121,10 +122,23 @@ public class ValidacionPreg extends JFrame {
 		
 		JLabel label = new JLabel("");
 		label.setBounds(0, 0, 473, 296);
-		label.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_5.jpg", label));
+		label.setIcon(cargarImagenParaLabel("recursos/imagenes/fondo_5.jpg", label));
 		
 		contentPane.add(label);
 		this.setVisible(true);
+	}
+	
+	public ImageIcon cargarImagenParaLabel(String ruta, JLabel label){
+		ImageIcon imgIcon = null;
+		try {
+			BufferedImage img = ImageIO.read(getClass().getResource(ruta));
+			Image dimg = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+			imgIcon = new ImageIcon(dimg);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return imgIcon;
 	}
 	
 	public static void multilineaTextArea(JTextArea area) {

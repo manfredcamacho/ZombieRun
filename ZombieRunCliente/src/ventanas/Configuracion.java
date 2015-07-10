@@ -1,27 +1,31 @@
 package ventanas;
 
-import herramientas.cargadorRecursos;
-
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-
 import comunicacion.ActualizarDatosBean;
 import comunicacion.DatosUsuarioBean;
 import comunicacion.ExisteUsuarioBean;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 public class Configuracion extends JFrame {
@@ -45,6 +49,9 @@ public class Configuracion extends JFrame {
 			}
 		});
 		
+		Font zombie = cargarFuentes("/fuentes/ZOMBIE.TTF", 50L);
+		Font hp = cargarFuentes("/fuentes/HPSimplified.ttf", 20L);
+		
 		lobby = lob;
 		setSize(417, 388);
 		setLocationRelativeTo(null);
@@ -56,20 +63,20 @@ public class Configuracion extends JFrame {
 		contentPane.setLayout(null);
 		
 		JLabel lblConfiguracion = new JLabel("CONFIGURACION", SwingConstants.CENTER);
-		lblConfiguracion.setFont(cargadorRecursos.ZOMBI_FONT);
+		lblConfiguracion.setFont(zombie);
 		lblConfiguracion.setForeground(Color.WHITE);
 		lblConfiguracion.setBounds(0, 11, 411, 43);
 		contentPane.add(lblConfiguracion);
 		
 		JLabel lblNick = new JLabel("Nick:");
 		lblNick.setForeground(Color.WHITE);
-		lblNick.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblNick.setFont(hp);
 		lblNick.setBounds(26, 87, 200, 14);
 		contentPane.add(lblNick);
 		
 		JLabel lblContraseaActual = new JLabel("Contrase\u00F1a Actual:");
 		lblContraseaActual.setForeground(Color.WHITE);
-		lblContraseaActual.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblContraseaActual.setFont(hp);
 		lblContraseaActual.setBounds(26, 205, 200, 14);
 		contentPane.add(lblContraseaActual);
 		
@@ -80,7 +87,7 @@ public class Configuracion extends JFrame {
 		
 		JLabel lblConfirmarContrasea = new JLabel("Confirmar Contrase\u00F1a:");
 		lblConfirmarContrasea.setForeground(Color.WHITE);
-		lblConfirmarContrasea.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblConfirmarContrasea.setFont(hp);
 		lblConfirmarContrasea.setBounds(26, 240, 200, 14);
 		contentPane.add(lblConfirmarContrasea);
 		
@@ -95,7 +102,7 @@ public class Configuracion extends JFrame {
 		textFieldConfirmNewPasswd.setColumns(10);
 		
 		JButton btnGuardar = new JButton("Guardar");
-		btnGuardar.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnGuardar.setFont(hp);
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				guardarDatos();
@@ -105,7 +112,7 @@ public class Configuracion extends JFrame {
 		contentPane.add(btnGuardar);
 		
 		JButton btnAtras = new JButton("Atras");
-		btnAtras.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnAtras.setFont(hp);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				atras();
@@ -116,13 +123,13 @@ public class Configuracion extends JFrame {
 		
 		JLabel lblPreguntaSecreta = new JLabel("Pregunta Secreta");
 		lblPreguntaSecreta.setForeground(Color.WHITE);
-		lblPreguntaSecreta.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblPreguntaSecreta.setFont(hp);
 		lblPreguntaSecreta.setBounds(26, 124, 200, 14);
 		contentPane.add(lblPreguntaSecreta);
 		
 		JLabel lblRespuestaSecreta = new JLabel("Respuesta Secreta");
 		lblRespuestaSecreta.setForeground(Color.WHITE);
-		lblRespuestaSecreta.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblRespuestaSecreta.setFont(hp);
 		lblRespuestaSecreta.setBounds(26, 163, 200, 14);
 		contentPane.add(lblRespuestaSecreta);
 		
@@ -138,7 +145,7 @@ public class Configuracion extends JFrame {
 		
 		JLabel fondo = new JLabel();
 		fondo.setBounds(0, 0, 411, 358);
-		fondo.setIcon( cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_5.jpg", fondo));
+		fondo.setIcon( cargarImagenParaLabel("/imagenes/fondo_5.jpg", fondo));
 		
 		contentPane.add(fondo);
 		
@@ -151,6 +158,38 @@ public class Configuracion extends JFrame {
 		this.textFieldPasswdAct.setText(datos.getPassword());
 		this.textFieldConfirmNewPasswd.setText(datos.getPassword());
 		this.setVisible(true);
+	}
+	
+	public Font cargarFuentes(final String ruta, float size){
+		Font fuente = null;
+		InputStream entrada = getClass().getResourceAsStream(ruta);//leemos el archivo
+		
+		//convertimos los datos binarios en un fuente.
+		try {
+			fuente  = Font.createFont(Font.TRUETYPE_FONT, entrada);
+		} catch (FontFormatException e) {
+			System.err.println("Formato de fuente incorrecto");
+		} catch (IOException e) {
+			System.err.println("Error en el archivo de la fuente");
+		}
+		
+		//establecemos el tamaño de la fuente por defecto
+		fuente = fuente.deriveFont(size);
+		
+		return fuente;
+	}
+	
+	public ImageIcon cargarImagenParaLabel(String ruta, JLabel label){
+		ImageIcon imgIcon = null;
+		try {
+			BufferedImage img = ImageIO.read(getClass().getResource(ruta));
+			Image dimg = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+			imgIcon = new ImageIcon(dimg);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return imgIcon;
 	}
 	
 	protected void guardarDatos() {

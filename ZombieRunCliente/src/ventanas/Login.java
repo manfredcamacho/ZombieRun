@@ -1,31 +1,21 @@
 package ventanas;
 
-
-
-
-import herramientas.cargadorRecursos;
-
 import java.awt.EventQueue;
-
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Image;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
-
 import comunicacion.LoginBean;
-
-
-
-
-
-
-
 import comunicacion.RecuperarBean;
-
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -36,6 +26,9 @@ import java.awt.event.WindowEvent;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class Login extends JFrame{
@@ -63,7 +56,6 @@ public class Login extends JFrame{
 	}
 
 	public Login() {
-		
 		/*
 		 * ACA GENERAMOS EL CLIENTE Y DEBERIAMOS TRANSPORTARLOS A TODOS LOS FRAMES PARA QUE PUEDA COMUNICARSE EN CUALQUIER LUGAR
 		 */
@@ -91,6 +83,17 @@ public class Login extends JFrame{
 			    tfUsuario.requestFocus();
 			}
 		});
+		
+		/*
+		 * CAMBIAR CARGADOR DE RECURSOS
+		 * cargadorRecursos.HPSIMPLIFIED_FONT por hp
+		 * cargadorRecursos.ZOMBI_FONT por zombie
+		 * 
+		 */
+		
+		Font zombie = cargarFuentes("/fuentes/ZOMBIE.TTF", 50L);
+		Font hp = cargarFuentes("/fuentes/HPSimplified.ttf", 20L);
+		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Login.class.getResource("/imagenes/zombie_hand.png")));
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -108,25 +111,25 @@ public class Login extends JFrame{
 			}
 		});
 		btnRegistro.setBounds(345, 231, 117, 43);
-		btnRegistro.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnRegistro.setFont(hp);
 		contentPane.add(btnRegistro);
 		
-		JLabel lblZombieRush = new JLabel("Zombie Rush");
+		JLabel lblZombieRush = new JLabel("Zombie Run");
 		lblZombieRush.setForeground(Color.WHITE);
-		lblZombieRush.setFont(cargadorRecursos.ZOMBI_FONT);
+		lblZombieRush.setFont(zombie);
 		lblZombieRush.setBounds(81, 28, 300, 78);
 		contentPane.add(lblZombieRush);
 		
 		JLabel lblUsuario = new JLabel("Usuario: ");
 		lblUsuario.setForeground(new Color(255, 255, 255));
-		lblUsuario.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblUsuario.setFont(hp);
 		lblUsuario.setBounds(91, 140, 89, 24);
 		contentPane.add(lblUsuario);
 		
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a: ");
-		lblContrasea.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblContrasea.setFont(hp);
 		lblContrasea.setForeground(new Color(255, 255, 255));
-		lblContrasea.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblContrasea.setFont(hp);
 		lblContrasea.setBounds(91, 175, 117, 24);
 		contentPane.add(lblContrasea);
 		
@@ -162,7 +165,7 @@ public class Login extends JFrame{
 					validar();
 			}
 		});
-		btnIngresar.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnIngresar.setFont(hp);
 		btnIngresar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				validar();
@@ -173,12 +176,45 @@ public class Login extends JFrame{
 		
 		JLabel label = new JLabel();
 		label.setBounds(0, 0, 471, 300);
-		label.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_4.jpg",label));
+		label.setIcon(cargarImagenParaLabel("/imagenes/fondo_4.jpg",label));
 		
 		
 		
 		
 		contentPane.add(label);
+		setVisible(true);
+	}
+	
+	public Font cargarFuentes(final String ruta, float size){
+		Font fuente = null;
+		InputStream entrada = getClass().getResourceAsStream(ruta);//leemos el archivo
+		
+		//convertimos los datos binarios en un fuente.
+		try {
+			fuente  = Font.createFont(Font.TRUETYPE_FONT, entrada);
+		} catch (FontFormatException e) {
+			System.err.println("Formato de fuente incorrecto");
+		} catch (IOException e) {
+			System.err.println("Error en el archivo de la fuente");
+		}
+		
+		//establecemos el tamaño de la fuente por defecto
+		fuente = fuente.deriveFont(size);
+		
+		return fuente;
+	}
+	
+	public ImageIcon cargarImagenParaLabel(String ruta, JLabel label){
+		ImageIcon imgIcon = null;
+		try {
+			BufferedImage img = ImageIO.read(getClass().getResource(ruta));
+			Image dimg = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+			imgIcon = new ImageIcon(dimg);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return imgIcon;
 	}
 	
 	public void cerrar(){
@@ -256,6 +292,5 @@ public class Login extends JFrame{
 
 	public void setIdUsuario(int idUsuario) {
 		this.idUsuario = idUsuario;
-	}
-	
+	}	
 }

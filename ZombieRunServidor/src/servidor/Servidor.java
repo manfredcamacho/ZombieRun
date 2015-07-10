@@ -28,6 +28,7 @@ public class Servidor {
 		this.frame = f;
 		partida = new Partida( 1, "Zombie", 1, 1,1); // ES PARA INTENTAR CONECTAR A DOS JUGADORES EN UN MISMO PROCESO
 		usuarios = new ArrayList<Socket>();
+		MySQLConnection.setFrame(frame);
 		conn = MySQLConnection.getConnection();
 		
 		try {

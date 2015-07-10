@@ -3,9 +3,7 @@ package servidor;
 
 import java.util.*;
 import java.io.IOException;
-
 import comunicacion.EscenarioBean;
-import comunicacion.estoyListoBean;
 import clasesPrincipales.*;
 
 public class Partida {

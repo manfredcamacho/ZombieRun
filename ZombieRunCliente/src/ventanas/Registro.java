@@ -1,10 +1,10 @@
 package ventanas;
 
-import herramientas.cargadorRecursos;
-
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -22,8 +22,13 @@ import comunicacion.RegistrarBean;
 
 import java.awt.Color;
 import java.awt.event.WindowAdapter;
+import java.awt.image.BufferedImage;
 import java.awt.Dimension;
+import java.awt.FontFormatException;
+import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 public class Registro extends JFrame {
@@ -51,6 +56,10 @@ public class Registro extends JFrame {
 				salir();
 			}
 		});
+		
+		Font zombie = cargarFuentes("/fuentes/ZOMBIE.TTF", 50L);
+		Font hp = cargarFuentes("/fuentes/HPSimplified.ttf", 20L);
+		
 		this.login = login;
 		setResizable(false);
 		setSize(450, 404);
@@ -62,42 +71,42 @@ public class Registro extends JFrame {
 		
 		JLabel lblRegistro = new JLabel("Registro");
 		lblRegistro.setForeground(new Color(0, 204, 0));
-		lblRegistro.setFont(cargadorRecursos.ZOMBI_FONT);
+		lblRegistro.setFont(zombie);
 		lblRegistro.setBounds(103, 11, 252, 50);
 		contentPane.add(lblRegistro);
 		
 		JLabel lblUsuario = new JLabel("Usuario:");
 		lblUsuario.setForeground(new Color(255, 255, 255));
-		lblUsuario.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblUsuario.setFont(hp);
 		lblUsuario.setBounds(10, 67, 103, 29);
 		contentPane.add(lblUsuario);
 		
 		JLabel lblContrasea = new JLabel("Contrase\u00F1a:");
 		lblContrasea.setForeground(new Color(255, 255, 255));
-		lblContrasea.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblContrasea.setFont(hp);
 		lblContrasea.setBounds(10, 110, 144, 29);
 		contentPane.add(lblContrasea);
 		
 		JLabel lblRepetirContrasea = new JLabel("Repetir Contrase\u00F1a:");
 		lblRepetirContrasea.setForeground(new Color(255, 255, 255));
-		lblRepetirContrasea.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblRepetirContrasea.setFont(hp);
 		lblRepetirContrasea.setBounds(10, 150, 188, 29);
 		contentPane.add(lblRepetirContrasea);
 		
 		JLabel lblPreguntaSecreta = new JLabel("Pregunta Secreta:");
 		lblPreguntaSecreta.setForeground(new Color(255, 255, 255));
-		lblPreguntaSecreta.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblPreguntaSecreta.setFont(hp);
 		lblPreguntaSecreta.setBounds(10, 190, 188, 29);
 		contentPane.add(lblPreguntaSecreta);
 		
 		JLabel lblRespuestaSecreta = new JLabel("Respuesta Secreta");
 		lblRespuestaSecreta.setForeground(new Color(255, 255, 255));
-		lblRespuestaSecreta.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblRespuestaSecreta.setFont(hp);
 		lblRespuestaSecreta.setBounds(10, 230, 188, 29);
 		contentPane.add(lblRespuestaSecreta);
 		
 		textField = new JTextField();
-		textField.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		textField.setFont(hp);
 		textField.setBounds(209, 71, 215, 20);
 		contentPane.add(textField);
 		textField.setColumns(10);
@@ -110,23 +119,23 @@ public class Registro extends JFrame {
 		textField_1.setColumns(10);
 		
 		passwordField = new JPasswordField();
-		passwordField.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		passwordField.setFont(hp);
 		passwordField.setBounds(209, 114, 215, 20);
 		contentPane.add(passwordField);
 		
 		passwordField_1 = new JPasswordField();
-		passwordField_1.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		passwordField_1.setFont(hp);
 		passwordField_1.setBounds(208, 154, 216, 20);
 		contentPane.add(passwordField_1);
 		
 		textField_2 = new JTextField();
-		textField_2.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		textField_2.setFont(hp);
 		textField_2.setBounds(208, 234, 216, 20);
 		contentPane.add(textField_2);
 		textField_2.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Registrar");
-		btnNewButton.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnNewButton.setFont(hp);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				registrar();
@@ -141,16 +150,48 @@ public class Registro extends JFrame {
 				cancelar();
 			}
 		});
-		btnNewButton_1.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnNewButton_1.setFont(hp);
 		btnNewButton_1.setBounds(243, 298, 133, 44);
 		contentPane.add(btnNewButton_1);
 		
 		JLabel label = new JLabel("");
 		label.setBounds(0, -25, 444, 547);
-		label.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_9.jpg", label));
+		label.setIcon(cargarImagenParaLabel("/imagenes/fondo_9.jpg", label));
 		
 		contentPane.add(label);
 		setVisible(true);
+	}
+	
+	public Font cargarFuentes(final String ruta, float size){
+		Font fuente = null;
+		InputStream entrada = getClass().getResourceAsStream(ruta);//leemos el archivo
+		
+		//convertimos los datos binarios en un fuente.
+		try {
+			fuente  = Font.createFont(Font.TRUETYPE_FONT, entrada);
+		} catch (FontFormatException e) {
+			System.err.println("Formato de fuente incorrecto");
+		} catch (IOException e) {
+			System.err.println("Error en el archivo de la fuente");
+		}
+		
+		//establecemos el tamaño de la fuente por defecto
+		fuente = fuente.deriveFont(size);
+		
+		return fuente;
+	}
+	
+	public ImageIcon cargarImagenParaLabel(String ruta, JLabel label){
+		ImageIcon imgIcon = null;
+		try {
+			BufferedImage img = ImageIO.read(getClass().getResource(ruta));
+			Image dimg = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+			imgIcon = new ImageIcon(dimg);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return imgIcon;
 	}
 	
 	public void cancelar(){

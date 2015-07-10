@@ -2,10 +2,12 @@ package herramientas;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import servidor.ServidorFrame;
 
 public class MySQLConnection {
 
 	private static Connection conn;
+	private static ServidorFrame frame;
 	
 	private MySQLConnection() {
 	}
@@ -19,15 +21,15 @@ public class MySQLConnection {
 				String usr="sql383231";
 				Class.forName(driver);
 				conn = DriverManager.getConnection(url,usr,pwd);
-				System.out.println("Se realizó la conexión con éxito");
+				frame.mostrarMensajeFrame("Se realizó la conexión con éxito");
 			}
 			else{
-				System.out.println("La conexión se encuentra realizada.");
+				frame.mostrarMensajeFrame("La conexión se encuentra realizada.");
 			}
 		} catch (ClassNotFoundException cnfe) {
-			System.err.println("No se encuentra el Driver.");
+			frame.mostrarMensajeFrame("No se encuentra el Driver.");
 		} catch (SQLException sqle) {
-			System.err.println("Error al intentar la conexión.");
+			frame.mostrarMensajeFrame("Error al intentar la conexión.");
 		}	
 		return conn;
 	}
@@ -36,10 +38,14 @@ public class MySQLConnection {
 		try {
 			if(conn != null) {
 				conn.close();
-				System.out.println("Desconexión de la BD exitosa.");
+				frame.mostrarMensajeFrame("Desconexión de la BD exitosa.");
 			}
 		} catch (SQLException sqle) {
-			System.err.println("Error al intentar la conexión.");
+			frame.mostrarMensajeFrame("Error al intentar la conexión.");
 		}
+	}
+
+	public static void setFrame(ServidorFrame frameserver) {
+		frame = frameserver;		
 	}
 }

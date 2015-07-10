@@ -1,7 +1,8 @@
 package ventanas;
 
-import herramientas.cargadorRecursos;
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -12,12 +13,17 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Image;
 import javax.swing.ListSelectionModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
 
 import comunicacion.*;
 public class Lobby extends JFrame {
@@ -43,6 +49,8 @@ public class Lobby extends JFrame {
 				desconectar();			
 			}
 		});
+		
+		Font zombie = cargarFuentes("/fuentes/ZOMBIE.TTF", 50L);
 
 		this.login = login;
 		setTitle("ZombieRush");
@@ -161,16 +169,48 @@ public class Lobby extends JFrame {
 		
 		JLabel lblLobby = new JLabel("Lobby", SwingConstants.CENTER);
 		lblLobby.setBounds(0, 11, 546, 42);
-		lblLobby.setFont(cargadorRecursos.ZOMBI_FONT);
+		lblLobby.setFont(zombie);
 		lblLobby.setForeground(Color.WHITE);
 		contentPane.add(lblLobby);
 		
 		JLabel label = new JLabel("");
 		label.setBounds(0, 0, 567, 377);
-		label.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_2.jpg", label));
+		label.setIcon(cargarImagenParaLabel("/imagenes/fondo_2.jpg", label));
 		
 		contentPane.add(label);
 		setVisible(true);
+	}
+	
+	public Font cargarFuentes(final String ruta, float size){
+		Font fuente = null;
+		InputStream entrada = getClass().getResourceAsStream(ruta);//leemos el archivo
+		
+		//convertimos los datos binarios en un fuente.
+		try {
+			fuente  = Font.createFont(Font.TRUETYPE_FONT, entrada);
+		} catch (FontFormatException e) {
+			System.err.println("Formato de fuente incorrecto");
+		} catch (IOException e) {
+			System.err.println("Error en el archivo de la fuente");
+		}
+		
+		//establecemos el tamaño de la fuente por defecto
+		fuente = fuente.deriveFont(size);
+		
+		return fuente;
+	}
+	
+	public ImageIcon cargarImagenParaLabel(String ruta, JLabel label){
+		ImageIcon imgIcon = null;
+		try {
+			BufferedImage img = ImageIO.read(getClass().getResource(ruta));
+			Image dimg = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+			imgIcon = new ImageIcon(dimg);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return imgIcon;
 	}
 
 	public void abrirConfiguraciones() {

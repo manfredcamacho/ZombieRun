@@ -1,15 +1,8 @@
 package clasesPrincipales;
 
 import java.io.Serializable;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-
 public class Personaje extends Figura implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3311220005520269731L;
 	private int x;
 	private int y;

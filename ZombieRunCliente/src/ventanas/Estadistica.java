@@ -1,25 +1,27 @@
 package ventanas;
 
-import herramientas.cargadorRecursos;
-
 import java.awt.Color;
 import java.awt.Font;
-
+import java.awt.FontFormatException;
+import java.awt.Image;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
-
 import comunicacion.EstadisticasBean;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Estadistica extends JFrame {
 
@@ -40,6 +42,10 @@ public class Estadistica extends JFrame {
 				salir();
 			}
 		});
+		
+		Font zombie = cargarFuentes("/fuentes/ZOMBIE.TTF", 50L);
+		Font hp = cargarFuentes("/fuentes/HPSimplified.ttf", 20L);
+		
 		lobby = lob;
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -53,37 +59,37 @@ public class Estadistica extends JFrame {
 		
 		JLabel lblEstadisticas = new JLabel("Estadisticas",SwingConstants.CENTER);
 		lblEstadisticas.setBounds(0, 11, 441, 50);
-		lblEstadisticas.setFont(cargadorRecursos.ZOMBI_FONT);
+		lblEstadisticas.setFont(zombie);
 		lblEstadisticas.setForeground(Color.WHITE);
 		contentPane.add(lblEstadisticas);
 		
 		JLabel lblU = new JLabel("Usuario");
 		lblU.setBounds(25, 104, 187, 14);
-		lblU.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblU.setFont(hp);
 		lblU.setForeground(Color.WHITE);
 		contentPane.add(lblU);
 		
 		JLabel lblPG = new JLabel("Partidas Ganadas");
 		lblPG.setBounds(25, 129, 187, 14);
-		lblPG.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblPG.setFont(hp);
 		lblPG.setForeground(Color.WHITE);
 		contentPane.add(lblPG);
 		
 		JLabel lblPJ = new JLabel("Partidas Jugadas");
 		lblPJ.setBounds(25, 154, 187, 14);
-		lblPJ.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblPJ.setFont(hp);
 		lblPJ.setForeground(Color.WHITE);
 		contentPane.add(lblPJ);
 		
 		JLabel lblPts = new JLabel("Puntos");
 		lblPts.setBounds(25, 179, 187, 14);
-		lblPts.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblPts.setFont(hp);
 		lblPts.setForeground(Color.WHITE);
 		contentPane.add(lblPts);
 		
 		JLabel lblPos = new JLabel("Posicion");
 		lblPos.setBounds(25, 204, 187, 14);
-		lblPos.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblPos.setFont(hp);
 		lblPos.setForeground(Color.WHITE);
 		contentPane.add(lblPos);
 		
@@ -94,7 +100,7 @@ public class Estadistica extends JFrame {
 			}
 		});
 		btnTop.setBounds(80, 290, 132, 50);
-		btnTop.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnTop.setFont(hp);
 		contentPane.add(btnTop);
 		
 		/////////////////////
@@ -131,7 +137,7 @@ public class Estadistica extends JFrame {
 		contentPane.add(lblPosicion);
 		
 		JButton btnAtras = new JButton("Atras");
-		btnAtras.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		btnAtras.setFont(hp);
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cerrar();
@@ -142,12 +148,44 @@ public class Estadistica extends JFrame {
 		
 		JLabel fondo = new JLabel("");
 		fondo.setBounds(0, 0, 441, 363);
-		fondo.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_6.jpg", fondo));
+		fondo.setIcon(cargarImagenParaLabel("/imagenes/fondo_6.jpg", fondo));
 		contentPane.add(fondo);
 		
 		cargarEstadisticas();
 		
 		this.setVisible(true);
+	}
+	
+	public Font cargarFuentes(final String ruta, float size){
+		Font fuente = null;
+		InputStream entrada = getClass().getResourceAsStream(ruta);//leemos el archivo
+		
+		//convertimos los datos binarios en un fuente.
+		try {
+			fuente  = Font.createFont(Font.TRUETYPE_FONT, entrada);
+		} catch (FontFormatException e) {
+			System.err.println("Formato de fuente incorrecto");
+		} catch (IOException e) {
+			System.err.println("Error en el archivo de la fuente");
+		}
+		
+		//establecemos el tamaño de la fuente por defecto
+		fuente = fuente.deriveFont(size);
+		
+		return fuente;
+	}
+	
+	public ImageIcon cargarImagenParaLabel(String ruta, JLabel label){
+		ImageIcon imgIcon = null;
+		try {
+			BufferedImage img = ImageIO.read(getClass().getResource(ruta));
+			Image dimg = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+			imgIcon = new ImageIcon(dimg);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return imgIcon;
 	}
 	
 	private void cargarEstadisticas() {

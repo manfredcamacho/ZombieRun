@@ -1,14 +1,16 @@
 package ventanas;
 
-import herramientas.cargadorRecursos;
-
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Image;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JList;
@@ -24,6 +26,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Espera extends JFrame {
 
@@ -34,7 +39,6 @@ public class Espera extends JFrame {
 	private Timer timer;
 	
 	// COMUNICACION CON EL CLIENTE
-	@SuppressWarnings("unused")
 	private Cliente clientSocket;
 	
 	
@@ -47,6 +51,10 @@ public class Espera extends JFrame {
 				salir();
 			}
 		});
+		
+		Font zombie = cargarFuentes("/fuentes/ZOMBIE.TTF", 50L);
+		Font hp = cargarFuentes("/fuentes/HPSimplified.ttf", 20L);
+		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Espera.class.getResource("/imagenes/zombie_hand.png")));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setTitle(datos[0]);
@@ -60,31 +68,31 @@ public class Espera extends JFrame {
 		
 		JLabel lblTitulo = new JLabel("Sala de espera");
 		lblTitulo.setBounds(177, 11, 371, 39);
-		lblTitulo.setFont(cargadorRecursos.ZOMBI_FONT);
+		lblTitulo.setFont(zombie);
 		lblTitulo.setForeground(Color.WHITE);
 		contentPane.add(lblTitulo);
 		
 		JLabel lblCom = new JLabel("Comienza en:");
 		lblCom.setBounds(208, 236, 100, 14);
-		lblCom.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblCom.setFont(hp);
 		lblCom.setForeground(Color.WHITE);
 		contentPane.add(lblCom);
 		
 		JLabel lblCM = new JLabel("Cantidad Maxima");
 		lblCM.setBounds(208, 112, 174, 14);
-		lblCM.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblCM.setFont(hp);
 		lblCM.setForeground(Color.WHITE);
 		contentPane.add(lblCM);
 		
 		JLabel lblJ = new JLabel("Jugadores");
 		lblJ.setBounds(208, 137, 92, 14);
-		lblJ.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblJ.setFont(hp);
 		lblJ.setForeground(Color.WHITE);
 		contentPane.add(lblJ);
 		
 		JLabel lblP = new JLabel("Partida");
 		lblP.setBounds(208, 87, 65, 14);
-		lblP.setFont(cargadorRecursos.HPSIMPLIFIED_FONT);
+		lblP.setFont(hp);
 		lblP.setForeground(Color.WHITE);
 		contentPane.add(lblP);
 		
@@ -195,9 +203,41 @@ public class Espera extends JFrame {
 		
 		JLabel fondo = new JLabel();
 		fondo.setBounds(0, 0, 548, 315);
-		fondo.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_3.jpg", fondo));
+		fondo.setIcon(cargarImagenParaLabel("/imagenes/fondo_3.jpg", fondo));
 		setVisible(true);
 		contentPane.add(fondo);
+	}
+	
+	public Font cargarFuentes(final String ruta, float size){
+		Font fuente = null;
+		InputStream entrada = getClass().getResourceAsStream(ruta);//leemos el archivo
+		
+		//convertimos los datos binarios en un fuente.
+		try {
+			fuente  = Font.createFont(Font.TRUETYPE_FONT, entrada);
+		} catch (FontFormatException e) {
+			System.err.println("Formato de fuente incorrecto");
+		} catch (IOException e) {
+			System.err.println("Error en el archivo de la fuente");
+		}
+		
+		//establecemos el tamaño de la fuente por defecto
+		fuente = fuente.deriveFont(size);
+		
+		return fuente;
+	}
+	
+	public ImageIcon cargarImagenParaLabel(String ruta, JLabel label){
+		ImageIcon imgIcon = null;
+		try {
+			BufferedImage img = ImageIO.read(getClass().getResource(ruta));
+			Image dimg = img.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);
+			imgIcon = new ImageIcon(dimg);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return imgIcon;
 	}
 	
 	public void salir(){
