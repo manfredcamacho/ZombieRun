@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+
 import comunicacion.*;
 
 public class HiloDeCliente extends Thread{
@@ -125,6 +126,9 @@ public class HiloDeCliente extends Thread{
 				}else if( peticion instanceof RankingBean ){
 					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de ranking.");
 					out.writeObject(retornarRanking((RankingBean)peticion));
+				}else if( peticion instanceof EstadisticasBean ){
+					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de estadisticas.");
+					out.writeObject(retornarEstadisticas((EstadisticasBean)peticion));
 				}else{
 					frame.mostrarMensajeFrame("no se reconoce al objeto.");
 				}
@@ -137,6 +141,30 @@ public class HiloDeCliente extends Thread{
 	
 	//////////////METODOS PARA EL MANEJO DE BASE DE DATOS////////
 	
+	private EstadisticasBean retornarEstadisticas(EstadisticasBean peticion) {
+		PreparedStatement pstmt = null;
+		String query = "SELECT (SELECT COUNT( * ) FROM estadistica e2 WHERE e2.puntos >= e.puntos) AS posicion, e.victorias victorias, e.derrotas derrotas, e.puntos puntos "+
+						"FROM usuario u JOIN estadistica e ON ( u.id = e.id_usuario ) "+ 
+						"WHERE u.nick = ? ";
+		try {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, peticion.getNick());
+			System.out.println(pstmt.toString());
+			pstmt.execute();
+			ResultSet rs = pstmt.getResultSet();
+			if(rs.next()){
+	            peticion.setPartidasGanadas(rs.getString("victorias"));
+	            peticion.setPartidasJugadas(Integer.toString(rs.getInt("victorias") + rs.getInt("derrotas")));
+	            peticion.setPosicion(rs.getString("posicion"));
+	            peticion.setPuntos(rs.getString("puntos"));
+			}
+            
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return peticion;
+	}
+
 	private RankingBean retornarRanking(RankingBean peticion) {
 		PreparedStatement pstmt = null;
 		try {
@@ -144,7 +172,6 @@ public class HiloDeCliente extends Thread{
 				pstmt = conn.prepareStatement("select u.nick nick, e.puntos puntos from usuario u join estadistica e on(u.id = e.id_usuario) order by e.puntos DESC limit 20");
 			else
 				pstmt = conn.prepareStatement("select u.nick nick, e.puntos puntos from usuario u join estadistica e on(u.id = e.id_usuario) order by e.puntos DESC");
-			System.out.println(pstmt.toString());
 			pstmt.execute();
 			ResultSet rs = pstmt.getResultSet();
 			int posicion = 1;
@@ -171,7 +198,6 @@ public class HiloDeCliente extends Thread{
 			pstmt.setString(3, peticion.getRespuesta());
 			pstmt.setString(4, new String(peticion.getPassword()));
 			pstmt.setInt(5, peticion.getId());
-			System.out.println(pstmt.toString());
 			pstmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -186,7 +212,6 @@ public class HiloDeCliente extends Thread{
 			pstmt = conn.prepareStatement("select 1 from usuario where nick = ?");
 			pstmt.setString(1, peticion.getNick());
 			pstmt.execute();
-			System.out.println(pstmt.toString());
 			ResultSet rs = pstmt.getResultSet();
 			if(rs.next()){
 				respuesta = "EXISTE";
@@ -212,7 +237,6 @@ public class HiloDeCliente extends Thread{
 			pstmt = conn.prepareStatement("select password, preguntaSecreta, respuestaSecreta from usuario where nick = ?");
 			pstmt.setString(1, peticion.getNick());
 			pstmt.execute();
-			//System.out.println(pstmt.toString());
 			ResultSet rs = pstmt.getResultSet();
 			if(rs.next()){
 				peticion.setPassword(rs.getString(1));
@@ -242,7 +266,6 @@ public class HiloDeCliente extends Thread{
 			pstmt.setString(1, peticion.getNick());
 			pstmt.setString(2, peticion.getRespuesta());
 			pstmt.execute();
-			System.out.println(pstmt.toString());
 			ResultSet rs = pstmt.getResultSet();
 			while(rs.next()){
 				respuestaSecreta = rs.getString(1);
@@ -267,7 +290,6 @@ public class HiloDeCliente extends Thread{
 			pstmt = conn.prepareStatement("select preguntaSecreta from usuario where nick = ?");
 			pstmt.setString(1, peticion.getNick());
 			pstmt.execute();
-			System.out.println(pstmt.toString());
 			ResultSet rs = pstmt.getResultSet();
 			while(rs.next()){
 				preguntaSecreta = rs.getString(1);
@@ -299,7 +321,6 @@ public class HiloDeCliente extends Thread{
 			pstmt.setString(1, login.getUser());
 			pstmt.setString(2, new String(login.getPassword()));
 			pstmt.execute();
-			System.out.println(pstmt.toString());
 			ResultSet rs = pstmt.getResultSet();
 			if(loginSuccess = rs.next())
 				idUsuario = rs.getInt("id");

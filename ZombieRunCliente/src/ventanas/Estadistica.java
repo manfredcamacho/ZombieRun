@@ -1,8 +1,10 @@
 package ventanas;
 
 import herramientas.cargadorRecursos;
+
 import java.awt.Color;
 import java.awt.Font;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +12,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+
+import comunicacion.EstadisticasBean;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -21,6 +26,11 @@ public class Estadistica extends JFrame {
 	private static final long serialVersionUID = -1311732552748537216L;
 	private JPanel contentPane;
 	private Lobby lobby;
+	private JLabel lblUser;
+	private JLabel lblPartidasGanadas;
+	private JLabel lblPartidasJugadas;
+	private JLabel lblPuntos; 
+	private JLabel lblPosicion;
 
 	public Estadistica(final Lobby lob) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Estadistica.class.getResource("/imagenes/zombie_hand.png")));
@@ -31,7 +41,7 @@ public class Estadistica extends JFrame {
 			}
 		});
 		lobby = lob;
-		this.setVisible(true);
+		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 444, 392);
 		setLocationRelativeTo(null);
@@ -90,31 +100,31 @@ public class Estadistica extends JFrame {
 		/////////////////////
 		// VARIABLES
 		
-		JLabel lblUser = new JLabel("L33T");
+		lblUser = new JLabel();
 		lblUser.setBounds(250, 104, 120, 14);
 		lblUser.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblUser.setForeground(Color.WHITE);
 		contentPane.add(lblUser);
 		
-		JLabel lblPartidasGanadas = new JLabel("127");
+		lblPartidasGanadas = new JLabel();
 		lblPartidasGanadas.setBounds(250, 129, 106, 14);
 		lblPartidasGanadas.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblPartidasGanadas.setForeground(Color.WHITE);
 		contentPane.add(lblPartidasGanadas);
 		
-		JLabel lblPartidasJugadas = new JLabel("145");
+		lblPartidasJugadas = new JLabel();
 		lblPartidasJugadas.setBounds(250, 154, 106, 14);
 		lblPartidasJugadas.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblPartidasJugadas.setForeground(Color.WHITE);
 		contentPane.add(lblPartidasJugadas);
 		
-		JLabel lblPuntos = new JLabel("1278");
+		lblPuntos = new JLabel();
 		lblPuntos.setBounds(250, 179, 106, 14);
 		lblPuntos.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblPuntos.setForeground(Color.WHITE);
 		contentPane.add(lblPuntos);
 		
-		JLabel lblPosicion = new JLabel("1°");
+		lblPosicion = new JLabel();
 		lblPosicion.setBounds(250, 204, 106, 14);
 		lblPosicion.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblPosicion.setForeground(Color.WHITE);
@@ -134,8 +144,23 @@ public class Estadistica extends JFrame {
 		fondo.setBounds(0, 0, 441, 363);
 		fondo.setIcon(cargadorRecursos.cargarImagenParaLabel("recursos/imagenes/fondo_6.jpg", fondo));
 		contentPane.add(fondo);
+		
+		cargarEstadisticas();
+		
+		this.setVisible(true);
 	}
 	
+	private void cargarEstadisticas() {
+		EstadisticasBean e = new EstadisticasBean(lobby.getLogin().getNick());
+		lobby.getCliente().enviarMensaje(e);
+		e = (EstadisticasBean)lobby.getCliente().leerMensaje();
+		this.lblPartidasGanadas.setText(e.getPartidasGanadas());
+		this.lblPartidasJugadas.setText((e.getPartidasJugadas()));
+		this.lblPuntos.setText(e.getPuntos());
+		this.lblPosicion.setText(e.getPosicion()+"°");
+		
+	}
+
 	public void cerrar(){
 		lobby.setVisible(true);
 		dispose();
