@@ -1,6 +1,6 @@
 package ventanas;
 
-import javax.imageio.ImageIO;
+import java.util.*;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -13,8 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Image;
 import javax.swing.ListSelectionModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -24,8 +22,8 @@ import java.awt.image.BufferedImage;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
-
 import comunicacion.*;
+
 public class Lobby extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -35,8 +33,8 @@ public class Lobby extends JFrame {
 	// COMUNICACION CON EL CLIENTE
 	private Cliente clientSocket;
 	
-	//ARRAYLIST DE PARTIDAS
-	//....
+	private final JList<String> listPartidas;
+	private final DefaultListModel<String> modelo;
 	
 	public Lobby(final Login login, Cliente client) {
 		
@@ -68,12 +66,8 @@ public class Lobby extends JFrame {
 		contentPane.add(btnActualizar);
 		btnActualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// ENVIAR UN MENSAJE AL SERVIDOR PARA QUE EL SERVIDOR NOS RETORNE 
-				// LA LISTA DE PARTIDAS
-				
-				// A CONTINUACION CARGAR ESE ARRAYLIST QUE NOS DIO EN EL JLIST
-				
-				// DEBERIAMOS TENER UN METODO QUE ACTUALICE LA LISTA
+				clientSocket.enviarMensaje( new ActualizarPartidasBean() );
+				cargarPartidas();
 			}
 		});
 
@@ -114,15 +108,13 @@ public class Lobby extends JFrame {
 		/////////////////////////////////////////////////////////////////////
 		
 		//cambiar String por tipo de dato correcto
-		final JList<String> listPartidas = new JList<String>();
-		DefaultListModel<String> modelo = new DefaultListModel</*
+		listPartidas = new JList<String>();
+		modelo = new DefaultListModel</*
 														 * AQUI VA EL TIPO DE
 														 * OBJETO QUE SE
 														 * ALMACENA
 														 */>();
-		modelo.addElement("Zombilandia               6/9         REGISTRANDO");
-		modelo.addElement("GuisoDeCerebros        1/4         REGISTRANDO");
-		modelo.addElement("JuegosDelHambre       4/4         EN CURSO");
+		
 		listPartidas.setModel(modelo);
 		listPartidas.setOpaque(true);
 		listPartidas.setBackground(new Color(0,0,0,100));
@@ -137,14 +129,15 @@ public class Lobby extends JFrame {
 		btnIngresar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				clientSocket.enviarMensaje(new IngresarPartida( 1 ));
+				clientSocket.enviarMensaje(new IngresarPartida( listPartidas.getSelectedIndex()));
+				// AGREGUE EL INDICE AL MENSAJE
 				
 				if(listPartidas.getSelectedIndex() == -1){
 					mostrarMensajeSatisfactorio("No selecciono ninguna Sala", JOptionPane.WARNING_MESSAGE);
 				}
 				else{
 					String selected = listPartidas.getSelectedValue().toString();
-					abrirEspera(selected.split(" +"));
+					abrirEspera(selected.split(" "));
 				}
 				
 			}
@@ -213,6 +206,26 @@ public class Lobby extends JFrame {
 		return imgIcon;
 	}
 
+
+	protected void cargarPartidas() {
+		// TODO Auto-generated method stub
+		modelo.clear();
+		
+		ActualizarPartidasBean obj =(ActualizarPartidasBean) clientSocket.leerMensaje();
+		ArrayList<String> lista = obj.getPartidas();
+		for (String string : lista) {
+			String linea = "";
+			String[] dato = string.split(" ");
+			if( dato[3].equals("true"))
+				dato[3] = "LLENA";
+			else
+				dato[3] = "REGISTRANDO";
+			linea = dato[0]+ " "+dato[1]+ " "+ dato[2]+ " "+ dato[3];
+			modelo.addElement(linea);
+		}
+	}
+
+
 	public void abrirConfiguraciones() {
 		@SuppressWarnings("unused")
 		Configuracion configuracion = new Configuracion(this);
@@ -245,7 +258,7 @@ public class Lobby extends JFrame {
 	
 	public void abrirEspera(String datos[]){
 		@SuppressWarnings("unused")
-		Espera espera = new Espera(this, datos, clientSocket);
+		Espera espera = new Espera(this, datos, clientSocket, listPartidas.getSelectedIndex());
 		this.setVisible(false);
 	}
 	

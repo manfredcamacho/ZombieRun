@@ -16,7 +16,7 @@ public class Servidor {
 	private ArrayList<Socket> usuarios;
 	
 	// DEMO PROBAMOS CON UNA PARTIDA
-	private Partida partida;
+	private ArrayList<Partida> partidas;
 	
 	//ABRIMOS CONECCION A BD
 	private Connection conn;
@@ -26,7 +26,11 @@ public class Servidor {
 	
 	public Servidor(final ServidorFrame f){
 		this.frame = f;
-		partida = new Partida( 1, "Zombie", 1, 1,1); // ES PARA INTENTAR CONECTAR A DOS JUGADORES EN UN MISMO PROCESO
+		partidas = new ArrayList<Partida>();
+		partidas.add( new Partida( 1, "GuisoCerebral", 2, 1, 1) ); // ES PARA INTENTAR CONECTAR A DOS JUGADORES EN UN MISMO PROCESO
+		partidas.add( new Partida( 2, "ZombieLand", 1, 1, 1) );
+		partidas.add( new Partida( 3, "AprobamePlis", 3, 1, 1) );
+		
 		usuarios = new ArrayList<Socket>();
 		MySQLConnection.setFrame(frame);
 		conn = MySQLConnection.getConnection();
@@ -45,7 +49,7 @@ public class Servidor {
 				
 				frame.mostrarMensajeFrame("Se conecto: " + clientSocket.getInetAddress().getHostAddress() );
 				usuarios.add(clientSocket);
-				HiloDeCliente hilo = new HiloDeCliente( clientSocket, usuarios, partida, conn, frame);
+				HiloDeCliente hilo = new HiloDeCliente( clientSocket, usuarios, partidas, conn, frame);
 				hilo.start();
 				// MANDO A EJECUTAR EL HILO
 				// VUELVO AL PRINCIPIO DEL WHILE A EMPEZAR A ESCUCHAR DE NUEVO

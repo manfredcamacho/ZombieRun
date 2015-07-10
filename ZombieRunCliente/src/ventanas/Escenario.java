@@ -41,10 +41,10 @@ public class Escenario extends JFrame {
 	private static final ImageIcon muro = new ImageIcon( Escenario.class.getResource("/muro.jpg"));
 
 	
+	private int idPartida;
 	
-	
-	public Escenario( Cliente client) {
-		
+	public Escenario( Cliente client, int idP) {
+		idPartida = idP;
 		direccion = 0;
 		clientSocket = client;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -119,20 +119,7 @@ public class Escenario extends JFrame {
 	
 	// ESTE METODO SE ENCARGA DE DIBUJAR EL MAPA
 	public void dibujarEscenario( Figura[][] mapa, int tamX, int tamY ){
-		
-		
-		for (int i = 0; i < mapa.length; i++) {
-			for (int j = 0; j < mapa.length; j++) {
-				if( mapa[i][j] instanceof Bloque )
-					System.out.print("B ");
-				else if ( mapa[i][j] instanceof Personaje )
-					System.out.print("P ");
-				else
-					System.out.print("  ");
-			}
-			System.out.println();
-		}
-		
+
 		escenario.removeAll();
 		escenario.setBounds(10, 10, tamX*25, tamY*25);
 		
@@ -160,12 +147,7 @@ public class Escenario extends JFrame {
 		escenario.repaint();
 	}
 	
-	
-	// ESTE METODO SE ENCARGA DE ENVIAR UNA DIRECCION
-	public void enviarDireccion(){
-		
-	}
-	
+
 	
 
 	public void HiloDeJuego(){
@@ -173,11 +155,9 @@ public class Escenario extends JFrame {
 			public void run(){
 				
 				while( true ){
-					System.out.println("Esperando el escenario...");
+				
 					Object peticion = clientSocket.escuchar();
-					System.out.println("Termino de escuchar");
-					System.out.println("Se recibio : " + peticion.getClass().getName());
-					
+		
 					if( peticion instanceof EscenarioBean ){
 						System.out.println("Se recibio el escenario");
 				
@@ -186,7 +166,14 @@ public class Escenario extends JFrame {
 										 ((EscenarioBean)peticion).getTamY());
 					}else if( peticion.equals("DIRECCION")){
 						
-						
+						try {
+							clientSocket.getOut().writeObject(new DireccionBean(direccion,clientSocket.getJugador(), idPartida ));
+							direccion = 0;
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						// ARREGLAR.. NO COORDINA BIEN
 						timer = new Timer(1000, new ActionListener() {			
 							int elapsedSeconds = 4;
 							@Override
@@ -200,21 +187,9 @@ public class Escenario extends JFrame {
 							}
 						});
 						timer.start();
-
-						
-						
-						System.out.println("NOS PIDIERON DIRECCION");
-						try {
-							clientSocket.getOut().writeObject(new DireccionBean(direccion,clientSocket.getJugador()));
-							System.out.println("ENVIAMOS NUESTRA DIRECCION");
-							direccion = 0;
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 					}
 
-				}
+				}// FIN WHILE TRUE
 				
 			}
 		});

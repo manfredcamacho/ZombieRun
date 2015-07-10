@@ -21,7 +21,7 @@ public class HiloDeCliente extends Thread{
 	//ARRAYLIST DE LOS USUARIOS
 	private ArrayList<Socket> usuarios;
 	// PARTIDAS EN PROCESO
-	private Partida partida; // DEMO
+	private ArrayList<Partida> partidas; // DEMO
 
 	private Connection conn;
 	
@@ -31,11 +31,11 @@ public class HiloDeCliente extends Thread{
 	
 	private int idUsuario;
 	
-	public HiloDeCliente( Socket s, ArrayList<Socket> u, Partida p , Connection c, ServidorFrame frame){
+	public HiloDeCliente( Socket s, ArrayList<Socket> u, ArrayList<Partida> p , Connection c, ServidorFrame frame){
 		clientSocket = s;
 		this.frame = frame;
 		setUsuarios(u);
-		partida = p; // DEMO
+		partidas = p; // DEMO
 		conn = c;
 		try {
 			// VINCULAMOS LOS INPUT Y OUTPUT CON LOS DEL CLIENTE( ESTOS LOS TIENE EL SOCKET )
@@ -62,7 +62,8 @@ public class HiloDeCliente extends Thread{
 				
 				// REEMPLAZAR POR UN SWITCH
 				if( peticion instanceof IngresarPartida ){
-					partida.agregarJugador( new Jugador(clientSocket,out,in));
+					buscarYagregar( (IngresarPartida)peticion );
+					//partida.agregarJugador( new Jugador(clientSocket,out,in));
 					frame.mostrarMensajeFrame("SE AGREGO EL JUGADOR " + clientSocket.getInetAddress());
 					//this.finalize();
 					// PERO SERIA UNA FORMA DE DETENER ESTE HILO PARA QUE LO
@@ -119,16 +120,18 @@ public class HiloDeCliente extends Thread{
 					out.writeObject("DATOS ACTUALIZADOS");
 				}else if( peticion instanceof estoyListoBean ){
 					System.out.println(((estoyListoBean) peticion).getId()-1);
-					partida.getJugadores().get( ((estoyListoBean) peticion).getId()-1).setEstoyListo(true);
+					partidas.get(((estoyListoBean)peticion).getIdPartida()).getJugadores().get( ((estoyListoBean) peticion).getId()-1).setEstoyListo(true);
 				}else if( peticion instanceof DireccionBean ){
-						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setDireccion(((DireccionBean) peticion).getDireccion());
-						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setEnvieDireccion(true);
+						partidas.get(((DireccionBean)peticion).getIdPartida()).getJugadores().get( ((DireccionBean) peticion).getId()-1).setDireccion(((DireccionBean) peticion).getDireccion());
+						partidas.get(((DireccionBean)peticion).getIdPartida()).getJugadores().get( ((DireccionBean) peticion).getId()-1).setEnvieDireccion(true);
 				}else if( peticion instanceof RankingBean ){
 					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de ranking.");
 					out.writeObject(retornarRanking((RankingBean)peticion));
 				}else if( peticion instanceof EstadisticasBean ){
 					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de estadisticas.");
 					out.writeObject(retornarEstadisticas((EstadisticasBean)peticion));
+				}else if( peticion instanceof ActualizarPartidasBean ){
+						enviarPartidas((ActualizarPartidasBean)peticion);
 				}else{
 					frame.mostrarMensajeFrame("no se reconoce al objeto.");
 				}
@@ -138,7 +141,24 @@ public class HiloDeCliente extends Thread{
 		}
 	}
 	
+	// NO SE SI ANDA BIEN
+	private void buscarYagregar(IngresarPartida peticion) throws InterruptedException, IOException {
+		// TODO Auto-generated method stub
+		partidas.get(peticion.getId()).agregarJugador(new Jugador(clientSocket,out,in));
+	}
+
+	private void enviarPartidas( ActualizarPartidasBean peticion ) throws IOException{
+		// DEBERIAMOS HACER ESTO PARA CADA PARTIDA
+		for (Partida partida : partidas) {
+			
+			peticion.getPartidas().add(partida.getNombre() + " " +
+										partida.getCantJugadoresEnCurso() + " " +
+										partida.getCantJugadoresMax() + " " +
+										partida.isEstado() );
+		}
+		out.writeObject(peticion);
 	
+	}
 	//////////////METODOS PARA EL MANEJO DE BASE DE DATOS////////
 	
 	private EstadisticasBean retornarEstadisticas(EstadisticasBean peticion) {
