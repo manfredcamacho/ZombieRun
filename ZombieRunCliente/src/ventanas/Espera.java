@@ -36,9 +36,11 @@ public class Espera extends JFrame {
 	// COMUNICACION CON EL CLIENTE
 	@SuppressWarnings("unused")
 	private Cliente clientSocket;
+	private int idPartida;
 	
-	
-	public Espera(Lobby lobby, String datos[], Cliente client) {
+	public Espera(Lobby lobby, String datos[], Cliente client, int idP) {
+		
+		idPartida = idP;
 		clientSocket = client;
 		this.lobby = lobby;
 		addWindowListener(new WindowAdapter() {
@@ -97,13 +99,13 @@ public class Espera extends JFrame {
 		lblNombrePartida.setForeground(Color.WHITE);
 		contentPane.add(lblNombrePartida);
 		
-		JLabel lblCantidadMax = new JLabel((datos[1].split("/"))[1]);
+		JLabel lblCantidadMax = new JLabel((datos[2]));
 		lblCantidadMax.setBounds(359, 112, 134, 14);
 		lblCantidadMax.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblCantidadMax.setForeground(Color.WHITE);
 		contentPane.add(lblCantidadMax);
 		
-		JLabel lblCantidadJugadores = new JLabel((datos[1].split("/"))[0]);
+		JLabel lblCantidadJugadores = new JLabel((datos[1]));
 		lblCantidadJugadores.setBounds(359, 137, 134, 14);
 		lblCantidadJugadores.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblCantidadJugadores.setForeground(Color.WHITE);
@@ -140,7 +142,7 @@ public class Espera extends JFrame {
 						        if(elapsedSeconds == 0){
 						           timer.stop();
 						           System.out.println("Enviando OKEY");
-						           clientSocket.enviarMensaje(new estoyListoBean(clientSocket.getJugador()));
+						           clientSocket.enviarMensaje(new estoyListoBean(clientSocket.getJugador(), idPartida));
 						           abrirPartida();				// ( ! )
 						           try {
 									this.finalize();
@@ -214,7 +216,7 @@ public class Espera extends JFrame {
 	
 	public void abrirPartida(){
 		//Partida partida = new Partida(this, clientSocket);
-		Escenario escenario = new Escenario( clientSocket );
+		Escenario escenario = new Escenario( clientSocket, idPartida );
 		escenario.setVisible(true);
 		this.setVisible(false);
 	}

@@ -28,11 +28,16 @@ public class Partida {
 	///////////////MAPAS////////////////////////
 	
 	private static final char[][] murosMapa1 ={
-		{'X','X','X','X','X'},
-		{'X',' ',' ',' ','X'},
-		{'X',' ',' ',' ','X'},
-		{'X',' ',' ',' ','X'},
-		{'X','X','X','X','X'}
+		{'X','X','X','X','X','X','X','X','X','X'},
+		{'X',' ',' ',' ',' ',' ',' ','X',' ','X'},
+		{'X',' ','X',' ','X',' ',' ',' ',' ','X'},
+		{'X',' ','X',' ','X',' ','X','X','X','X'},
+		{'X',' ','X','X','X',' ',' ',' ',' ','X'},
+		{'X',' ',' ',' ',' ',' ',' ',' ',' ','X'},
+		{'X',' ','X',' ','X','X','X',' ','X','X'},
+		{'X',' ','X',' ','X','X','X',' ','X','X'},
+		{'X',' ','X',' ',' ',' ',' ',' ',' ','X'},
+		{'X','X','X','X','X','X','X','X','X','X'}
 	};
 	
 	////////////////////////////////////////////
@@ -50,11 +55,11 @@ public class Partida {
 		
 		
 		if( idMapa == 1 ){
-			tamX = 5;
-			tamY = 5;
-			escenario = new Figura[5][5];
-			for (int j = 0; j < 5; j++) {
-				for (int j2 = 0; j2 < 5; j2++) {
+			tamX = 10;
+			tamY = 10;
+			escenario = new Figura[10][10];
+			for (int j = 0; j < 10; j++) {
+				for (int j2 = 0; j2 < 10; j2++) {
 					if( murosMapa1[j][j2] == 'X'){
 						escenario[j][j2] = new Bloque();
 					}
@@ -72,6 +77,7 @@ public class Partida {
 			System.out.println( "CANTIDAD DE JUGADORES EN CURSO : " + cantJugadoresEnCurso );
 			
 			if( cantJugadoresEnCurso == cantJugadoresMax ){
+				estado = true; // LA PARTIDA ESTA EN CURSO
 				generarPosiciones();
 				enviarComienzo();
 				esperarJugadores();
@@ -85,6 +91,26 @@ public class Partida {
 	}
 	
 	
+	public int getId() {
+		return id;
+	}
+
+	public int getCantJugadoresMax() {
+		return cantJugadoresMax;
+	}
+
+	public int getCantJugadoresEnCurso() {
+		return cantJugadoresEnCurso;
+	}
+
+	public int getTamX() {
+		return tamX;
+	}
+
+	public int getTamY() {
+		return tamY;
+	}
+
 	private void esperarJugadores() {
 		Thread hilo = new Thread( new Runnable() {
 			
