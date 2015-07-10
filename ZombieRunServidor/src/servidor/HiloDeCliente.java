@@ -120,8 +120,8 @@ public class HiloDeCliente extends Thread{
 					System.out.println(((estoyListoBean) peticion).getId()-1);
 					partida.getJugadores().get( ((estoyListoBean) peticion).getId()-1).setEstoyListo(true);
 				}else if( peticion instanceof DireccionBean ){
-						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setEnvieDireccion(true);
 						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setDireccion(((DireccionBean) peticion).getDireccion());
+						partida.getJugadores().get( ((DireccionBean) peticion).getId()-1).setEnvieDireccion(true);
 				}else if( peticion instanceof RankingBean ){
 					frame.mostrarMensajeFrame(ipCliente+">> Solicitud de ranking.");
 					out.writeObject(retornarRanking((RankingBean)peticion));

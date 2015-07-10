@@ -24,7 +24,7 @@ public class Partida {
 	private ArrayList<Jugador>jugadores;
 	private int tamX;
 	private int tamY;
-	
+	private int empiezaZombie = 1;
 	///////////////MAPAS////////////////////////
 	
 	private static final char[][] murosMapa1 ={
@@ -76,7 +76,6 @@ public class Partida {
 				enviarComienzo();
 				esperarJugadores();
 				enviarMapa();
-				// COMENZAR PARTIDA
 				comenzarPartida();
 			}
 			
@@ -132,15 +131,18 @@ public class Partida {
 			public void run(){
 				while( true ){
 					try {
-						//this.wait(5000);
 						while(true){
+							Thread.sleep(5000);
 							pedirDirecciones();// MANDAMOS UN MENSAJE A LOS CLIENTES PARA RECIBIR LAS DIRECCIONES
 							esperarDirecciones();
 							moverJugadores();
-							//detectarInfecciones();
+							detectarInfecciones();				
 							enviarMapa();
 						}
 					}catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -150,38 +152,67 @@ public class Partida {
 		hiloPartida.start();
 	}
 
+	protected void detectarInfecciones() {
+		// TODO Auto-generated method stub
+		for (Jugador jugador : jugadores) {
+			int x = jugador.getX();
+			int y = jugador.getY();
+			if( ((Personaje)escenario[x][y]).esZombie() == false ){
+				if( escenario[x+1][y] instanceof Personaje && 
+						((Personaje)escenario[x+1][y]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+				if( escenario[x-1][y] instanceof Personaje &&
+						((Personaje)escenario[x-1][y]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+				if( escenario[x][y-1] instanceof Personaje &&
+						((Personaje)escenario[x][y-1]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+				if( escenario[x][y+1] instanceof Personaje &&
+						((Personaje)escenario[x][y+1]).esZombie() == true){
+					((Personaje)escenario[x][y]).convertir();
+				}
+			}
+		}
+		
+	}
+
 	protected void moverJugadores() {
 		for (Jugador jugador : jugadores) {
 			int x = jugador.getX();
 			int y = jugador.getY();
+			System.out.println( "JugadorX :" +x);
+			System.out.println( "JugadorY :" +y);
 			System.out.println("************** entra ****************");
 			if( jugador.getDireccion() == 1 ){// ARRIBA
-				if( escenario[x-1][y] == null ){
-					System.out.println("SE MOVIO HACIA ARRIBA");
-					escenario[x-1][y] = escenario[x][y];
-					escenario[x][y] = null;
-					jugador.setX(jugador.getX()-1);
-				}
-			}
-			if( jugador.getDireccion() == 2 ){// ABAJO
-				if( escenario[x+1][y] == null ){
-					escenario[x+1][y] = escenario[x][y];
-					escenario[x][y] = null;
-					jugador.setX(jugador.getX()+1);
-				}
-			}
-			if( jugador.getDireccion() == 3 ){//IZQUIERDA
 				if( escenario[x][y-1] == null ){
+					System.out.println("SE MOVIO HACIA ARRIBA");
 					escenario[x][y-1] = escenario[x][y];
 					escenario[x][y] = null;
 					jugador.setY(jugador.getY()-1);
 				}
 			}
-			if( jugador.getDireccion() == 4 ){//DERECHA
+			if( jugador.getDireccion() == 2 ){// ABAJO
 				if( escenario[x][y+1] == null ){
 					escenario[x][y+1] = escenario[x][y];
 					escenario[x][y] = null;
 					jugador.setY(jugador.getY()+1);
+				}
+			}
+			if( jugador.getDireccion() == 3 ){//IZQUIERDA
+				if( escenario[x-1][y] == null ){
+					escenario[x-1][y] = escenario[x][y];
+					escenario[x][y] = null;
+					jugador.setX(jugador.getX()-1);
+				}
+			}
+			if( jugador.getDireccion() == 4 ){//DERECHA
+				if( escenario[x+1][y] == null ){
+					escenario[x+1][y] = escenario[x][y];
+					escenario[x][y] = null;
+					jugador.setX(jugador.getX()+1);
 				}
 			}
 		}
@@ -222,6 +253,7 @@ public class Partida {
 	protected void pedirDirecciones() throws IOException {
 		for (Jugador jugador : jugadores) {
 			System.out.println("Pido direccion para el jugador ");
+			jugador.getOut().reset();
 			jugador.getOut().writeObject("DIRECCION");
 			jugador.getOut().flush();
 		}
@@ -232,6 +264,7 @@ public class Partida {
 		System.out.println("ENVIANDO MAPA A LOS JUGADORES...");
 		for (Jugador jugador : jugadores) {
 			try {
+				jugador.getOut().reset();
 				jugador.getOut().writeObject(new EscenarioBean(escenario, tamX, tamY));
 				jugador.getOut().flush();
 			} catch (IOException e) {
@@ -244,6 +277,7 @@ public class Partida {
 	
 	public void generarPosiciones(){
 		Random rand = new Random();
+		int cont = 1;
 		for (Jugador jugador : jugadores) {
 			boolean seColoco = false;
 			while( seColoco == false ){
@@ -252,10 +286,16 @@ public class Partida {
 				int y = rand.nextInt()%murosMapa1.length;
 				System.out.println(y);
 				if( x >= 0 && y >= 0 && escenario[x][y] == null ){
-					escenario[x][y] = new Personaje(jugador.getNick(), x, y, false);
+					if( cont == empiezaZombie )
+						escenario[x][y] = new Personaje(jugador.getNick(), x, y, true);
+					else
+						escenario[x][y] = new Personaje(jugador.getNick(), x, y, false);
+					jugador.setX(x);
+					jugador.setY(y);
 					seColoco = true;
 				}
 			}
+			cont++;
 		}
 	}
 	
