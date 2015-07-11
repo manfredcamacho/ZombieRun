@@ -18,6 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.Timer;
 
+import comunicacion.ActualizarEsperaBean;
 import comunicacion.EscenarioBean;
 import comunicacion.estoyListoBean;
 
@@ -29,7 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.util.*;
 public class Espera extends JFrame {
 
 	private static final long serialVersionUID = -3130079893489606850L;
@@ -41,6 +42,13 @@ public class Espera extends JFrame {
 	// COMUNICACION CON EL CLIENTE
 	private Cliente clientSocket;
 	private int idPartida;
+	
+	private int jugadoresEnLinea;
+	private ArrayList<String> jugadores;
+	
+	private JList<String> listJugadores;
+	private DefaultListModel<String> modelo;
+	
 	
 	public Espera(Lobby lobby, String datos[], Cliente client, int idP) {
 		
@@ -139,7 +147,7 @@ public class Espera extends JFrame {
 		Thread hilo = new Thread( new Runnable(){
 			public void run(){
 				Object obj =  (Object)clientSocket.escuchar();
-				if( obj instanceof EscenarioBean )
+				if( obj instanceof EscenarioBean ){
 						System.out.println(clientSocket.leerMensaje());
 						timer = new Timer(1000, new ActionListener() {			
 							int elapsedSeconds = 5;
@@ -161,12 +169,18 @@ public class Espera extends JFrame {
 						        }
 						}});
 						timer.start();
-				
+				}else if( obj instanceof ActualizarEsperaBean ){
+					jugadores = ((ActualizarEsperaBean)obj).getJugadores();
+					jugadoresEnLinea = ((ActualizarEsperaBean)obj).getCantJugadores();
+					modelo.clear();
+					for (String string : jugadores) {
+						modelo.addElement(string);
+					}
+				}
 			}		
 		});
 		hilo.start();
 
-		
 		
 		/*
 		 * LO DE LA LISTA HABRIA QUE VER COMO HACER

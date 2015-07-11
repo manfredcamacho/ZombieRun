@@ -63,6 +63,7 @@ public class HiloDeCliente extends Thread{
 				// REEMPLAZAR POR UN SWITCH
 				if( peticion instanceof IngresarPartida ){
 					buscarYagregar( (IngresarPartida)peticion );
+					actualizarEspera((IngresarPartida)peticion );
 					//partida.agregarJugador( new Jugador(clientSocket,out,in));
 					frame.mostrarMensajeFrame("SE AGREGO EL JUGADOR " + clientSocket.getInetAddress());
 					//this.finalize();
@@ -139,6 +140,20 @@ public class HiloDeCliente extends Thread{
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void actualizarEspera( IngresarPartida obj ) throws IOException {
+		// TODO Auto-generated method stub
+		ArrayList<String> jugadores = new ArrayList<String>();
+		int cont = 0;
+		for (Jugador jugador : partidas.get(obj.getId()).getJugadores()) {
+			jugadores.add(jugador.getNick());
+			cont++;
+		}
+		for (Jugador jugador : partidas.get(obj.getId()).getJugadores()) {
+			jugador.getOut().writeObject( new ActualizarEsperaBean(cont, jugadores));
+			jugador.getOut().flush();
 		}
 	}
 	

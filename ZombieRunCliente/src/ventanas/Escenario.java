@@ -47,6 +47,10 @@ public class Escenario extends JFrame {
 	private  final ImageIcon zombie = new ImageIcon( getClass().getResource("/imagenes/zombie.jpg"));
 	private  final ImageIcon muro = new ImageIcon( getClass().getResource("/imagenes/muro.jpg"));
 
+	private  final ImageIcon humanoP = new ImageIcon( getClass().getResource("/imagenes/humanoP.jpg"));
+	private  final ImageIcon zombieP = new ImageIcon( getClass().getResource("/imagenes/zombieP.jpg"));
+	
+	
 	
 	private int idPartida;
 	
@@ -154,13 +158,25 @@ public class Escenario extends JFrame {
 							escenario.add(muroAux);
 						}else if( mapa[i][j] instanceof Personaje ){
 							if( ((Personaje)mapa[i][j]).esZombie() ){
-								JLabel muroAux = new JLabel(zombie);
-								muroAux.setBounds(i*25, j*25, 25, 25);
-								escenario.add(muroAux);
+								if( i == xp && j == yp ){
+									JLabel muroAux = new JLabel(zombieP);
+									muroAux.setBounds(i*25, j*25, 25, 25);
+									escenario.add(muroAux);
+								}else{
+									JLabel muroAux = new JLabel(zombie);
+									muroAux.setBounds(i*25, j*25, 25, 25);
+									escenario.add(muroAux);
+								}
 							}else{
-								JLabel muroAux = new JLabel(humano);
-								muroAux.setBounds(i*25, j*25, 25, 25);
-								escenario.add(muroAux);
+								if( i == xp && j == yp ){
+									JLabel muroAux = new JLabel(humanoP);
+									muroAux.setBounds(i*25, j*25, 25, 25);
+									escenario.add(muroAux);
+								}else{
+									JLabel muroAux = new JLabel(humano);
+									muroAux.setBounds(i*25, j*25, 25, 25);
+									escenario.add(muroAux);
+								}
 							}
 						}
 					}
@@ -176,13 +192,25 @@ public class Escenario extends JFrame {
 						escenario.add(muroAux);
 					}else if( mapa[i][j] instanceof Personaje ){
 						if( ((Personaje)mapa[i][j]).esZombie() ){
-							JLabel muroAux = new JLabel(zombie);
-							muroAux.setBounds(i*25, j*25, 25, 25);
-							escenario.add(muroAux);
+							if( i == xp && j == yp ){
+								JLabel muroAux = new JLabel(zombieP);
+								muroAux.setBounds(i*25, j*25, 25, 25);
+								escenario.add(muroAux);
+							}else{
+								JLabel muroAux = new JLabel(zombie);
+								muroAux.setBounds(i*25, j*25, 25, 25);
+								escenario.add(muroAux);
+							}
 						}else{
-							JLabel muroAux = new JLabel(humano);
-							muroAux.setBounds(i*25, j*25, 25, 25);
-							escenario.add(muroAux);
+							if( i == xp && j == yp ){
+								JLabel muroAux = new JLabel(humanoP);
+								muroAux.setBounds(i*25, j*25, 25, 25);
+								escenario.add(muroAux);
+							}else{
+								JLabel muroAux = new JLabel(humano);
+								muroAux.setBounds(i*25, j*25, 25, 25);
+								escenario.add(muroAux);
+							}
 						}
 					}
 				}
@@ -193,7 +221,6 @@ public class Escenario extends JFrame {
 		escenario.revalidate();
 		escenario.repaint();
 	}
-	
 
 	
 
