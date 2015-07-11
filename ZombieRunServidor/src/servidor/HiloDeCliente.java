@@ -370,12 +370,14 @@ public class HiloDeCliente extends Thread{
 			
 			if(!rs.next()){//si no hay otro usurio con el mismo nick insertamos
 				pstmt.close();
-				pstmt = conn.prepareStatement("Insert into usuario values(null, ?, ?, ?, ?); insert into estadistica values((select max(id) from usuario),0,0,0)");
+				pstmt = conn.prepareStatement("Insert into usuario values(null, ?, ?, ?, ?)");
 				pstmt.setString(1, registro.getNick());
 				pstmt.setString(2, new String(registro.getPassword()));
 				pstmt.setString(3, registro.getPregunta());
 				pstmt.setString(4, registro.getRespuesta());
-				System.out.println(pstmt);
+				pstmt.execute();
+				
+				pstmt = conn.prepareStatement("insert into estadistica values((select max(id) from usuario),0,0,0)");
 				pstmt.execute();
 				return true;
 			}
