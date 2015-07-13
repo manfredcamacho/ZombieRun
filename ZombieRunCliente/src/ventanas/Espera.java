@@ -169,13 +169,6 @@ public class Espera extends JFrame {
 						        }
 						}});
 						timer.start();
-				}else if( obj instanceof ActualizarEsperaBean ){
-					jugadores = ((ActualizarEsperaBean)obj).getJugadores();
-					jugadoresEnLinea = ((ActualizarEsperaBean)obj).getCantJugadores();
-					modelo.clear();
-					for (String string : jugadores) {
-						modelo.addElement(string);
-					}
 				}
 			}		
 		});

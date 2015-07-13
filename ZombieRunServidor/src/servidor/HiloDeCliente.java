@@ -62,8 +62,8 @@ public class HiloDeCliente extends Thread{
 				
 				// REEMPLAZAR POR UN SWITCH
 				if( peticion instanceof IngresarPartida ){
+					//actualizarEspera((IngresarPartida)peticion);
 					buscarYagregar( (IngresarPartida)peticion );
-					actualizarEspera((IngresarPartida)peticion );
 					//partida.agregarJugador( new Jugador(clientSocket,out,in));
 					frame.mostrarMensajeFrame("SE AGREGO EL JUGADOR " + clientSocket.getInetAddress());
 					//this.finalize();
