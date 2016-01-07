@@ -11,7 +11,7 @@ public class Cliente extends Thread{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	// DATOS NECESARIOS PARA LA CONEXION
-	private static final String host ="127.0.0.1";
+	private static final String host ="192.168.1.107";
 	private static final int puerto = 5000;
 	private int jugador;
 	private Object objLeido;

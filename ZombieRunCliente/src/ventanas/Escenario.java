@@ -263,7 +263,7 @@ public class Escenario extends JFrame {
 						});
 						timer.start();
 					}else if( peticion.equals("TERMINO")){
-						System.out.println("SE TERMINO LA PARTIDA");
+						/*System.out.println("SE TERMINO LA PARTIDA");
 						lobby.setVisible(true);
 						try {
 							
@@ -274,7 +274,7 @@ public class Escenario extends JFrame {
 						} catch (Throwable e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}
+						}*/
 					}
 
 				}// FIN WHILE TRUE

@@ -16,9 +16,17 @@ public class MySQLConnection {
 		try {
 			if(conn == null) {	
 				String driver="com.mysql.jdbc.Driver"; //el driver varia segun la BD que usemos
-				String url="jdbc:mysql://sql3.freesqldatabase.com:3306/sql383231";
+				
+				/*String url="jdbc:mysql://sql3.freesqldatabase.com:3306/sql383231";
 				String pwd="iH2*xV3!";
-				String usr="sql383231";
+				String usr="sql383231";*/
+				
+
+			    String serverName = "localhost";
+			    String mydatabase = "zombie";
+			    String url = "jdbc:mysql://" + serverName + "/" + mydatabase; 
+				String pwd="";
+				String usr="root";
 				Class.forName(driver);
 				conn = DriverManager.getConnection(url,usr,pwd);
 				frame.mostrarMensajeFrame("Se realizó la conexión con éxito");

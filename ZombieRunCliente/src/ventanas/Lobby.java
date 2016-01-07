@@ -117,11 +117,7 @@ public class Lobby extends JFrame {
 		
 		//cambiar String por tipo de dato correcto
 		listPartidas = new JList<String>();
-		modelo = new DefaultListModel</*
-														 * AQUI VA EL TIPO DE
-														 * OBJETO QUE SE
-														 * ALMACENA
-														 */>();
+		modelo = new DefaultListModel<>();
 		
 		listPartidas.setModel(modelo);
 		listPartidas.setOpaque(true);
