@@ -4,6 +4,7 @@ Juego multijugador en linea hecho en java
 El trabajo consiste en la realización de una aplicación clienteservidor, la cual simulará el funcionamiento de un juego de zombies y humanos
 
 Mecánica del juego
+
 El juego consiste en un escenario apocalíptico en el cual habrá una cantidad de humanos, y un zombie.
 Los humanos escapan, el zombie atrapan humanos.
 Durante el juego, el zombie va convirtiendo humanos, que una vez convertidos, deben ayudar al zombie a atrapar al resto (literalmente, se convierte).
